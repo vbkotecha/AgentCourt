@@ -1,0 +1,26 @@
+{
+  "name": "Freelance Delivery Dispute",
+  "description": "Dispute between a client and freelancer over deliverable quality, deadline, or payment",
+  "dispute_type": "delivery",
+  "contract_template": {
+    "parties": ["{{client_name}}", "{{freelancer_name}}"],
+    "obligations": ["{{deliverable_description}}"],
+    "deadlines": ["{{deadline}}"],
+    "deliverables": ["{{deliverable_list}}"],
+    "payment_terms": "{{payment_amount}} on {{payment_schedule}}"
+  },
+  "evidence_types": ["contract", "message", "payment", "file"],
+  "common_claims": [
+    "Deliverable quality below agreed standard",
+    "Delivery past deadline",
+    "Partial delivery missing agreed components",
+    "Payment not received after delivery",
+    "Scope creep beyond original agreement"
+  ],
+  "typical_remedies": [
+    "Partial refund for late delivery",
+    "Full refund for non-delivery",
+    "Revision request with deadline",
+    "Payment release for accepted deliverables"
+  ]
+}

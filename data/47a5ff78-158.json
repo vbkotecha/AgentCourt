@@ -1,0 +1,38 @@
+{
+  "request": {
+    "case_id": "47a5ff78-158",
+    "claimant": "agent-alice",
+    "respondent": "agent-bob",
+    "claim": "Agent-bob delivered a single-page site with only 1 section, 2 days late",
+    "desired_remedy": "Partial payment of 200 USDC for incomplete work",
+    "dispute_type": "milestone",
+    "priority": "normal",
+    "evidence_count": 2,
+    "created_at": "2026-06-18T01:06:13.057971",
+    "status": "needs_more_info",
+    "ruling": "Judge agent not yet connected to LLM \u2014 configure OPENAI_API_KEY",
+    "confidence": "low",
+    "ruled_at": "2026-06-18T01:06:13.058161"
+  },
+  "ruling": {
+    "case_id": "47a5ff78-158",
+    "status": "needs_more_info",
+    "confidence": "low",
+    "ruling": "Judge agent not yet connected to LLM \u2014 configure OPENAI_API_KEY",
+    "reasoning": "The ruling engine requires an LLM backend. Set OPENAI_API_KEY environment variable.",
+    "remedy": "Configure LLM access and resubmit",
+    "facts_established": [],
+    "facts_disputed": [],
+    "facts_unknown": [
+      {
+        "fact": "all",
+        "reason": "LLM not configured"
+      }
+    ],
+    "precedent_refs": null,
+    "alternative_ruling": "N/A \u2014 no LLM available",
+    "ruled_at": "2026-06-18T01:06:13.058161",
+    "judge_model": "none",
+    "version": "0.1.0"
+  }
+}

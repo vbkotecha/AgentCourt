@@ -1,0 +1,38 @@
+{
+  "request": {
+    "case_id": "4b6c3b81-173",
+    "claimant": "test-agent",
+    "respondent": "test-builder",
+    "claim": "Logo was delivered 5 days late and wrong colors",
+    "desired_remedy": "50% refund",
+    "dispute_type": null,
+    "priority": "normal",
+    "evidence_count": 1,
+    "created_at": "2026-06-18T01:06:41.835916",
+    "status": "needs_more_info",
+    "ruling": "Judge agent not yet connected to LLM \u2014 configure OPENAI_API_KEY",
+    "confidence": "low",
+    "ruled_at": "2026-06-18T01:06:41.836106"
+  },
+  "ruling": {
+    "case_id": "4b6c3b81-173",
+    "status": "needs_more_info",
+    "confidence": "low",
+    "ruling": "Judge agent not yet connected to LLM \u2014 configure OPENAI_API_KEY",
+    "reasoning": "The ruling engine requires an LLM backend. Set OPENAI_API_KEY environment variable.",
+    "remedy": "Configure LLM access and resubmit",
+    "facts_established": [],
+    "facts_disputed": [],
+    "facts_unknown": [
+      {
+        "fact": "all",
+        "reason": "LLM not configured"
+      }
+    ],
+    "precedent_refs": null,
+    "alternative_ruling": "N/A \u2014 no LLM available",
+    "ruled_at": "2026-06-18T01:06:41.836106",
+    "judge_model": "none",
+    "version": "0.1.0"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "request": {
+    "case_id": "3578509a-6f6",
+    "claimant": "agent-alice",
+    "respondent": "agent-bob",
+    "claim": "Agent-bob delivered a single-page site with only 1 section, 2 days late",
+    "desired_remedy": "Partial payment of 200 USDC for incomplete work",
+    "dispute_type": "milestone",
+    "priority": "normal",
+    "evidence_count": 3,
+    "created_at": "2026-06-18T02:41:49.126793",
+    "status": "ruled",
+    "ruling": "Agent-bob materially breached the contract by delivering only 1 of 3 required sections and delivering 2 days late; claimant is entitled to partial payment of 200 USDC.",
+    "confidence": "high",
+    "ruled_at": "2026-06-18T02:42:12.284305"
+  },
+  "ruling": {
+    "case_id": "3578509a-6f6",
+    "status": "ruled",
+    "confidence": "high",
+    "ruling": "Agent-bob materially breached the contract by delivering only 1 of 3 required sections and delivering 2 days late; claimant is entitled to partial payment of 200 USDC.",
+    "reasoning": "Step 1: The contract clearly obligated agent-bob to build a landing page with 3 sections (hero, features, pricing) by June 15, 2026, for 500 USDC. This obligation is unambiguous per Evidence #1. Step 2: Evidence #2 (screenshot) shows only the hero section was delivered. Evidence #3 (agent-bob's own message) confirms this: 'just the hero section for now.' Step 3: Evidence #3 also confirms late delivery \u2014 the message is dated June 16, after the June 15 deadline, and agent-bob acknowledges being late. Step 4: The failure is material \u2014 only 33% of the required sections were delivered, and the deadline was missed. Step 5: The contract specifies 500 USDC 'on delivery' but does not address partial or late delivery remedies. Step 6: Proportional calculation: 1 of 3 sections = ~167 USDC. The claimant requests 200 USDC, which is slightly above strict proportionality but reasonable given the compounding breach (incomplete + late). The claimant is effectively accepting 60% of the contract value for 33% of the deliverables, which accounts for damages from breach but remains fair to both parties.",
+    "remedy": "Agent-bob shall pay agent-alice 200 USDC as partial payment for the incomplete and late delivery. Agent-bob retains no further obligation to complete the remaining sections unless a new agreement is reached, as the claimant has accepted partial performance at a reduced rate.",
+    "facts_established": [
+      {
+        "fact": "Contract required 3 sections: hero, features, and pricing",
+        "evidence_ids": [
+          "d1703c48-423"
+        ]
+      },
+      {
+        "fact": "Only the hero section was delivered",
+        "evidence_ids": [
+          "6f804b6c-fcd",
+          "3f443bf8-068"
+        ]
+      },
+      {
+        "fact": "Delivery occurred after the June 15 deadline",
+        "evidence_ids": [
+          "3f443bf8-068"
+        ]
+      }
+    ],
+    "facts_disputed": [],
+    "facts_unknown": [
+      {
+        "fact": "Whether the delivered hero section included responsive design as required",
+        "reason": "insufficient evidence \u2014 screenshot and messages don't confirm or deny responsiveness"
+      },
+      {
+        "fact": "Whether agent-bob had any legitimate justification for the delay or incomplete delivery",
+        "reason": "insufficient evidence \u2014 agent-bob mentioned 'issues' but provided no specifics or documentation"
+      }
+    ],
+    "precedent_refs": null,
+    "alternative_ruling": "If agent-bob argued that 200 USDC exceeds the proportional value of work delivered (1/3 of 500 = ~167 USDC), a strictly proportional ruling would reduce payment to 167 USDC. Additionally, if agent-bob could prove the hero section was delivered on time (before the deadline) with only the remaining sections being late, the late-delivery damages might be reduced. However, agent-bob's own message strongly undermines either defense.",
+    "ruled_at": "2026-06-18T02:42:12.284305",
+    "judge_model": "z-ai/glm-5.1",
+    "version": "0.1.0"
+  }
+}

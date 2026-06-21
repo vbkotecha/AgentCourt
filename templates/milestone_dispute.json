@@ -1,0 +1,25 @@
+{
+  "name": "Milestone Payment Dispute",
+  "description": "Dispute over milestone completion criteria and payment release",
+  "dispute_type": "milestone",
+  "contract_template": {
+    "parties": ["{{payer_name}}", "{{payee_name}}"],
+    "obligations": ["Complete milestone {{milestone_name}} per specification"],
+    "deadlines": ["{{milestone_deadline}}"],
+    "deliverables": ["{{milestone_deliverables}}"],
+    "payment_terms": "{{milestone_payment}} USDC on milestone approval"
+  },
+  "evidence_types": ["contract", "payment", "file", "log"],
+  "common_claims": [
+    "Milestone criteria not met",
+    "Milestone completed but payment withheld",
+    "Milestone scope changed without agreement",
+    "Verification failed but work was completed"
+  ],
+  "typical_remedies": [
+    "Release milestone payment",
+    "Partial payment for partial completion",
+    "Extension of milestone deadline",
+    "Revision required before payment"
+  ]
+}

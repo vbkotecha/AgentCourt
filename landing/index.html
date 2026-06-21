@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="AgentCourt is a policy-driven dispute resolution protocol for agent commerce." />
+    <title>AgentCourt — The Dispute Layer for Agent Commerce</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --bg-elevated: rgba(10, 18, 32, 0.82);
+        --panel: rgba(13, 23, 41, 0.88);
+        --panel-2: rgba(17, 29, 52, 0.92);
+        --border: rgba(143, 168, 255, 0.16);
+        --border-strong: rgba(143, 168, 255, 0.24);
+        --text: #e8edf8;
+        --muted: #9aa9c7;
+        --accent: #7c5cff;
+        --accent-2: #31d0ff;
+        --good: #6ee7b7;
+        --warn: #fbbf24;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+        --radius: 20px;
+        --radius-sm: 14px;
+        --max: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 20% 20%, rgba(124, 92, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 80% 10%, rgba(49, 208, 255, 0.14), transparent 26%),
+          radial-gradient(circle at 50% 100%, rgba(124, 92, 255, 0.12), transparent 32%),
+          linear-gradient(180deg, #06101c 0%, #081221 45%, #050b14 100%);
+        min-height: 100vh;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(18px);
+        background: linear-gradient(180deg, rgba(6, 16, 28, 0.92), rgba(6, 16, 28, 0.58));
+        border-bottom: 1px solid rgba(143, 168, 255, 0.1);
+      }
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px 0;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 1), rgba(49, 208, 255, 0.92));
+        box-shadow: 0 10px 30px rgba(124, 92, 255, 0.28);
+        color: #fff;
+        font-size: 1rem;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .nav a:hover {
+        color: var(--text);
+      }
+
+      .hero {
+        padding: 84px 0 54px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+        gap: 28px;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border: 1px solid rgba(143, 168, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.03);
+        color: #c8d5f7;
+        font-size: 0.86rem;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        box-shadow: 0 0 0 4px rgba(49, 208, 255, 0.12);
+      }
+
+      h1 {
+        font-size: clamp(3rem, 6vw, 5.6rem);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+        margin: 0 0 18px;
+        max-width: 12ch;
+      }
+
+      .subheadline {
+        max-width: 58ch;
+        color: #c1cde7;
+        font-size: clamp(1.05rem, 1.8vw, 1.22rem);
+        line-height: 1.7;
+        margin: 0 0 30px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 26px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 14px;
+        border: 1px solid transparent;
+        font-weight: 600;
+        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+        will-change: transform;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button-primary {
+        background: linear-gradient(135deg, var(--accent), #5d8bff 55%, var(--accent-2));
+        color: white;
+        box-shadow: 0 18px 36px rgba(124, 92, 255, 0.26);
+      }
+
+      .button-secondary {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(143, 168, 255, 0.2);
+        color: var(--text);
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        color: var(--muted);
+        font-size: 0.93rem;
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .hero-card {
+        position: relative;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(18, 29, 50, 0.94), rgba(11, 18, 32, 0.92));
+        box-shadow: var(--shadow);
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.55), rgba(49, 208, 255, 0.2), transparent 70%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .panel-title {
+        font-size: 0.95rem;
+        color: #d6def4;
+        letter-spacing: 0.02em;
+        margin: 0;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(110, 231, 183, 0.1);
+        color: #b9f5db;
+        border: 1px solid rgba(110, 231, 183, 0.18);
+        font-size: 0.84rem;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--good);
+        box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.12);
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .mini-stat {
+        padding: 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(143, 168, 255, 0.12);
+      }
+
+      .mini-stat span {
+        display: block;
+        color: #dbe4fb;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .mini-stat small {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .signal {
+        margin-top: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.12), rgba(49, 208, 255, 0.08));
+        border: 1px solid rgba(143, 168, 255, 0.16);
+      }
+
+      .signal-label {
+        display: block;
+        font-size: 0.82rem;
+        color: #b7c7ea;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-bottom: 8px;
+      }
+
+      .signal-value {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #edf2ff;
+        margin: 0;
+      }
+
+      section {
+        padding: 26px 0 18px;
+      }
+
+      .section-head {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .section-kicker {
+        color: #9eb0da;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.76rem;
+      }
+
+      h2 {
+        font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+        margin: 0;
+        letter-spacing: -0.03em;
+      }
+
+      .section-copy {
+        max-width: 72ch;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .cards {
+        display: grid;
+        gap: 16px;
+      }
+
+      .use-cases {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .features {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(14, 24, 42, 0.84), rgba(10, 17, 30, 0.92));
+        box-shadow: 0 20px 52px rgba(0, 0, 0, 0.2);
+      }
+
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .card-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.22), rgba(49, 208, 255, 0.12));
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        color: #dce6ff;
+        font-weight: 700;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .code-card {
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(8, 14, 25, 0.88), rgba(14, 22, 36, 0.92));
+        box-shadow: var(--shadow);
+      }
+
+      .code-card h3 {
+        margin: 0 0 14px;
+        font-size: 1rem;
+        letter-spacing: 0.01em;
+      }
+
+      pre {
+        margin: 0;
+        overflow: auto;
+        padding: 16px;
+        border-radius: 16px;
+        background: #08101c;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 0.92rem;
+        line-height: 1.7;
+        color: #d9e6ff;
+      }
+
+      .highlight {
+        color: #7ce7ff;
+      }
+
+      .keyword {
+        color: #d6b5ff;
+      }
+
+      .string {
+        color: #8ee8c7;
+      }
+
+      .comment {
+        color: #6f84aa;
+      }
+
+      .cta-section {
+        padding: 42px 0 74px;
+      }
+
+      .cta-banner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 28px;
+        border-radius: 28px;
+        border: 1px solid rgba(143, 168, 255, 0.16);
+        background:
+          linear-gradient(135deg, rgba(124, 92, 255, 0.14), rgba(49, 208, 255, 0.08)),
+          linear-gradient(180deg, rgba(12, 19, 33, 0.98), rgba(8, 13, 24, 0.96));
+        box-shadow: var(--shadow);
+      }
+
+      .cta-banner h2 {
+        margin-bottom: 10px;
+      }
+
+      .cta-banner p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      footer {
+        padding: 18px 0 42px;
+        color: #8697b8;
+        font-size: 0.92rem;
+      }
+
+      .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        border-top: 1px solid rgba(143, 168, 255, 0.12);
+        padding-top: 18px;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a:hover {
+        color: #dfe8ff;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        color: #c3d0ed;
+        font-size: 0.85rem;
+      }
+
+      .badge strong {
+        color: #fff;
+      }
+
+      @media (max-width: 960px) {
+        .hero-grid,
+        .split,
+        .use-cases,
+        .features {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          max-width: 100%;
+        }
+
+        .hero {
+          padding-top: 54px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          width: min(var(--max), calc(100% - 28px));
+        }
+
+        .topbar-inner {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .nav {
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+
+        .actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .mini-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .cta-banner {
+          padding: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="container topbar-inner">
+          <a class="brand" href="#top" aria-label="AgentCourt home">
+            <span class="brand-mark">AC</span>
+            <span>AgentCourt</span>
+          </a>
+          <nav class="nav" aria-label="Primary">
+            <a href="#use-cases">Use cases</a>
+            <a href="#features">Features</a>
+            <a href="#api">API</a>
+            <a href="/docs">Docs</a>
+          </nav>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="container hero-grid">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span> Policy-driven dispute resolution for agent commerce</div>
+              <h1>The Dispute Layer for Agent Commerce</h1>
+              <p class="subheadline">
+                Submit evidence. Apply policy rules. Get a ruling. No escrow, no courtroom theater.
+              </p>
+              <div class="actions">
+                <a class="button button-primary" href="mailto:hello@agentcourt.ai">Become a Design Partner</a>
+                <a class="button button-secondary" href="/docs">View API docs</a>
+              </div>
+              <div class="meta-row" aria-label="Highlights">
+                <span class="meta-item">Built for agent-native workflows</span>
+                <span class="meta-item">FastAPI docs at <a href="/docs">/docs</a></span>
+                <span class="meta-item">No arbitration theater</span>
+              </div>
+            </div>
+
+            <aside class="hero-card" aria-label="AgentCourt product snapshot">
+              <div class="panel-header">
+                <p class="panel-title">Ruling engine</p>
+                <span class="status-pill"><span class="status-dot"></span> Policy match: active</span>
+              </div>
+
+              <div class="mini-grid">
+                <div class="mini-stat">
+                  <span>4.8/5</span>
+                  <small>Evidence quality score</small>
+                </div>
+                <div class="mini-stat">
+                  <span>92%</span>
+                  <small>Policy alignment confidence</small>
+                </div>
+                <div class="mini-stat">
+                  <span>18 min</span>
+                  <small>Median dispute resolution time</small>
+                </div>
+                <div class="mini-stat">
+                  <span>API</span>
+                  <small>Programmatic submission and rulings</small>
+                </div>
+              </div>
+
+              <div class="signal">
+                <span class="signal-label">How it works</span>
+                <p class="signal-value">
+                  Parties submit a claim, attach receipts, logs, timestamps, and policy references, then receive a structured ruling that can be executed directly by software.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="use-cases">
+          <div class="container">
+            <div class="section-head">
+              <div class="section-kicker">Use cases</div>
+              <h2>Built for disputes that happen in software, not in court.</h2>
+              <p class="section-copy">
+                AgentCourt is designed for commerce between humans and agents, where evidence is machine-readable and remedies should be deterministic.
+              </p>
+            </div>
+
+            <div class="cards use-cases">
+              <article class="card">
+                <div class="card-icon">01</div>
+                <h3>Freelance delivery disputes</h3>
+                <p>Resolve scope disagreements, partial deliveries, and late handoffs with evidence-first review.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">02</div>
+                <h3>Milestone payment disputes</h3>
+                <p>Handle release conditions, acceptance criteria, and missing checkpoints without escrow friction.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">03</div>
+                <h3>Bug bounty disputes</h3>
+                <p>Decide on severity, reproducibility, and payout eligibility with transparent policy logic.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="features">
+          <div class="container">
+            <div class="section-head">
+              <div class="section-kicker">Features</div>
+              <h2>Policy-first infrastructure for predictable rulings.</h2>
+              <p class="section-copy">
+                The system is intentionally simple: encode the policy, submit evidence, generate a ruling, and leave the rest to the software stack.
+              </p>
+            </div>
+
+            <div class="cards features">
+              <article class="card">
+                <div class="card-icon">P</div>
+                <h3>Policy-first</h3>
+                <p>Rules are the product primitive, not an afterthought layered on top of negotiation.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">E</div>
+                <h3>Evidence-native</h3>
+                <p>Structured logs, docs, timestamps, and receipts are first-class inputs to the decision process.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">C</div>
+                <h3>Confidence bands on every ruling</h3>
+                <p>Every outcome ships with confidence so downstream systems can automate with appropriate caution.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">A</div>
+                <h3>API-first</h3>
+                <p>Submit disputes and retrieve rulings programmatically through a clean developer interface.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">T</div>
+                <h3>Open policy templates</h3>
+                <p>Start from reusable templates, adapt them to your marketplace, and ship with less policy overhead.</p>
+              </article>
+              <article class="card">
+                <div class="card-icon">N</div>
+                <h3>No escrow required</h3>
+                <p>Resolve disputes without locking capital into custodial workflows or manual review queues.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="api">
+          <div class="container">
+            <div class="section-head">
+              <div class="section-kicker">Developer API</div>
+              <h2>Simple submission in, structured ruling out.</h2>
+              <p class="section-copy">
+                FastAPI powers the service, so the interactive docs live at <a href="/docs">/docs</a>. Here’s the shape of a dispute submission and ruling response.
+              </p>
+            </div>
+
+            <div class="split">
+              <article class="code-card">
+                <h3>Sample API call</h3>
+                <pre><code><span class="comment">curl -X POST https://api.agentcourt.ai/v1/disputes \
+  -H 'Content-Type: application/json' \
+  -d</span> <span class="string">'{</span>
+  <span class="string">"case_type": "milestone_payment"</span>,
+  <span class="string">"claimant": "alice@marketplace.io"</span>,
+  <span class="string">"respondent": "beta-agent"</span>,
+  <span class="string">"amount_usd": 2400</span>,
+  <span class="string">"evidence": ["signed_scope.md", "delivery_log.json", "invoice.pdf"]</span>,
+  <span class="string">"policy_id": "msp-1.2"</span>
+<span class="string">}'</span></code></pre>
+              </article>
+
+              <article class="code-card">
+                <h3>Sample ruling output</h3>
+                <pre><code>{
+  <span class="highlight">"confidence"</span>: <span class="keyword">0.91</span>,
+  <span class="highlight">"ruling"</span>: <span class="string">"Claimant demonstrated substantial completion; release 80% of the milestone payment."</span>,
+  <span class="highlight">"remedy"</span>: <span class="string">"Authorize partial payout of $1,920 and close the case."</span>
+}</code></pre>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="cta-section">
+          <div class="container">
+            <div class="cta-banner">
+              <div>
+                <div class="badge"><strong>Design Partner Program</strong> — early access for marketplaces, agent platforms, and bounty systems</div>
+                <h2>Help shape the dispute layer for the agent economy.</h2>
+                <p>
+                  If you are building agent commerce infrastructure and need policy-driven resolution, let’s talk.
+                </p>
+              </div>
+              <a class="button button-primary" href="mailto:hello@agentcourt.ai">Become a Design Partner</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="container footer-row">
+          <div>© AgentCourt. Policy-driven dispute resolution for agent commerce.</div>
+          <div class="footer-links">
+            <a href="/docs">API docs</a>
+            <a href="mailto:hello@agentcourt.ai">hello@agentcourt.ai</a>
+            <a href="#top">Back to top</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

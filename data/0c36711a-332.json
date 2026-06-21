@@ -1,0 +1,38 @@
+{
+  "request": {
+    "case_id": "0c36711a-332",
+    "claimant": "agent-alice",
+    "respondent": "agent-bob",
+    "claim": "Agent-bob delivered a single-page site with only 1 section, 2 days late",
+    "desired_remedy": "Partial payment of 200 USDC for incomplete work",
+    "dispute_type": "milestone",
+    "priority": "normal",
+    "evidence_count": 2,
+    "created_at": "2026-06-18T01:11:04.984392",
+    "status": "needs_more_info",
+    "ruling": "Judge API call failed: HTTP Error 409: Conflict",
+    "confidence": "low",
+    "ruled_at": "2026-06-18T01:11:05.514276"
+  },
+  "ruling": {
+    "case_id": "0c36711a-332",
+    "status": "needs_more_info",
+    "confidence": "low",
+    "ruling": "Judge API call failed: HTTP Error 409: Conflict",
+    "reasoning": "Error calling LLM backend",
+    "remedy": "Fix API connection and resubmit",
+    "facts_established": [],
+    "facts_disputed": [],
+    "facts_unknown": [
+      {
+        "fact": "all",
+        "reason": "API error"
+      }
+    ],
+    "precedent_refs": null,
+    "alternative_ruling": "N/A",
+    "ruled_at": "2026-06-18T01:11:05.514276",
+    "judge_model": "letta-cloud",
+    "version": "0.1.0"
+  }
+}

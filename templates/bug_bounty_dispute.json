@@ -1,0 +1,25 @@
+{
+  "name": "Bug Bounty Dispute",
+  "description": "Dispute over bug severity classification and bounty payout",
+  "dispute_type": "quality",
+  "contract_template": {
+    "parties": ["{{researcher_name}}", "{{project_name}}"],
+    "obligations": ["Classify bug per severity framework and pay corresponding bounty"],
+    "deadlines": ["{{triage_deadline}}"],
+    "deliverables": ["Bug report with reproduction steps", "Proof of exploit"],
+    "payment_terms": "{{bounty_amount}} USDC based on severity level"
+  },
+  "evidence_types": ["file", "log", "message"],
+  "common_claims": [
+    "Bug severity downgraded to avoid payout",
+    "Bug report rejected as duplicate",
+    "Bounty amount below published schedule",
+    "Disclosure rules violated"
+  ],
+  "typical_remedies": [
+    "Pay bounty at correct severity level",
+    "Reclassify bug severity",
+    "Partial bounty for valid subset of report",
+    "Disclosure deadline extension"
+  ]
+}
