@@ -14,6 +14,7 @@ AgentCourt v1 — Policy-Driven Dispute Resolution API
 """
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
@@ -39,6 +40,14 @@ app = FastAPI(
     title="AgentCourt",
     version="1.0.0",
     description="Policy-driven dispute resolution protocol for agent commerce",
+)
+
+# Enable CORS for landing page demos
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 # --- Data directory ---
@@ -246,6 +255,23 @@ async def preview_policy_evaluation(
         "would_ruling": matched.get("ruling_template"),
         "predicted_confidence": matched.get("confidence"),
         "predicted_remedy": matched.get("remedy"),
+    }
+
+
+@app.get("/")
+async def root():
+    return {
+        "name": "AgentCourt",
+        "tagline": "The dispute layer for agent commerce",
+        "version": "1.0.0",
+        "endpoints": {
+            "submit_dispute": "POST /v1/disputes",
+            "list_policies": "GET /v1/policies",
+            "get_case": "GET /v1/cases/{case_id}",
+            "health": "GET /health",
+            "docs": "GET /docs",
+        },
+        "live": True,
     }
 
 

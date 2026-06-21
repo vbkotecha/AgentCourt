@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Live AgentCourt dispute demos that POST directly to the production ruling API." />
+    <title>AgentCourt — Live Demo Disputes</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --bg-elevated: rgba(10, 18, 32, 0.82);
+        --panel: rgba(13, 23, 41, 0.88);
+        --panel-2: rgba(17, 29, 52, 0.92);
+        --border: rgba(143, 168, 255, 0.16);
+        --border-strong: rgba(143, 168, 255, 0.24);
+        --text: #e8edf8;
+        --muted: #9aa9c7;
+        --accent: #7c5cff;
+        --accent-2: #31d0ff;
+        --good: #6ee7b7;
+        --warn: #fbbf24;
+        --bad: #fb7185;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+        --radius: 20px;
+        --radius-sm: 14px;
+        --max: 1180px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 20% 20%, rgba(124, 92, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 80% 10%, rgba(49, 208, 255, 0.14), transparent 26%),
+          radial-gradient(circle at 50% 100%, rgba(124, 92, 255, 0.12), transparent 32%),
+          linear-gradient(180deg, #06101c 0%, #081221 45%, #050b14 100%);
+        min-height: 100vh;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      summary {
+        font: inherit;
+      }
+
+      .page {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .container {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(18px);
+        background: linear-gradient(180deg, rgba(6, 16, 28, 0.92), rgba(6, 16, 28, 0.58));
+        border-bottom: 1px solid rgba(143, 168, 255, 0.1);
+      }
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px 0;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 1), rgba(49, 208, 255, 0.92));
+        box-shadow: 0 10px 30px rgba(124, 92, 255, 0.28);
+        color: #fff;
+        font-size: 1rem;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .nav a:hover {
+        color: var(--text);
+      }
+
+      .hero {
+        padding: 84px 0 40px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+        gap: 28px;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border: 1px solid rgba(143, 168, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.03);
+        color: #c8d5f7;
+        font-size: 0.86rem;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        box-shadow: 0 0 0 4px rgba(49, 208, 255, 0.12);
+      }
+
+      h1 {
+        font-size: clamp(3rem, 6vw, 5.6rem);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+        margin: 0 0 18px;
+        max-width: 12ch;
+      }
+
+      .subheadline {
+        max-width: 60ch;
+        color: #c1cde7;
+        font-size: clamp(1.05rem, 1.8vw, 1.22rem);
+        line-height: 1.7;
+        margin: 0 0 30px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 26px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 14px;
+        border: 1px solid transparent;
+        font-weight: 600;
+        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease, opacity 160ms ease;
+        will-change: transform;
+        cursor: pointer;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button:disabled {
+        cursor: progress;
+        opacity: 0.78;
+        transform: none;
+      }
+
+      .button-primary {
+        background: linear-gradient(135deg, var(--accent), #5d8bff 55%, var(--accent-2));
+        color: white;
+        box-shadow: 0 18px 36px rgba(124, 92, 255, 0.26);
+      }
+
+      .button-secondary {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(143, 168, 255, 0.2);
+        color: var(--text);
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        color: var(--muted);
+        font-size: 0.93rem;
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .hero-card {
+        position: relative;
+        padding: 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(18, 29, 50, 0.94), rgba(11, 18, 32, 0.92));
+        box-shadow: var(--shadow);
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.55), rgba(49, 208, 255, 0.2), transparent 70%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .panel-title {
+        font-size: 0.95rem;
+        color: #d6def4;
+        letter-spacing: 0.02em;
+        margin: 0;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(110, 231, 183, 0.1);
+        color: #b9f5db;
+        border: 1px solid rgba(110, 231, 183, 0.18);
+        font-size: 0.84rem;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--good);
+        box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.12);
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .mini-stat {
+        padding: 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid rgba(143, 168, 255, 0.12);
+      }
+
+      .mini-stat span {
+        display: block;
+        color: #dbe4fb;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .mini-stat small {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .signal {
+        margin-top: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.12), rgba(49, 208, 255, 0.08));
+        border: 1px solid rgba(143, 168, 255, 0.16);
+      }
+
+      .signal-label {
+        display: block;
+        font-size: 0.82rem;
+        color: #b7c7ea;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-bottom: 8px;
+      }
+
+      .signal-value {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #edf2ff;
+        margin: 0;
+      }
+
+      section {
+        padding: 18px 0 18px;
+      }
+
+      .section-head {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .section-kicker {
+        color: #9eb0da;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.76rem;
+      }
+
+      h2 {
+        font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+        margin: 0;
+        letter-spacing: -0.03em;
+      }
+
+      .section-copy {
+        max-width: 78ch;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .cards {
+        display: grid;
+        gap: 16px;
+      }
+
+      .demos-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(14, 24, 42, 0.84), rgba(10, 17, 30, 0.92));
+        box-shadow: 0 20px 52px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 1.12rem;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .card-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+        background: linear-gradient(135deg, rgba(124, 92, 255, 0.22), rgba(49, 208, 255, 0.12));
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        color: #dce6ff;
+        font-weight: 700;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 14px 0 0;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(143, 168, 255, 0.15);
+        background: rgba(255, 255, 255, 0.03);
+        color: #dce6ff;
+        font-size: 0.82rem;
+      }
+
+      .pill strong {
+        color: #fff;
+      }
+
+      .list-label {
+        display: block;
+        margin: 18px 0 10px;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: #93a6d1;
+      }
+
+      .bullet-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #d7e0f4;
+        line-height: 1.6;
+      }
+
+      .bullet-list li + li {
+        margin-top: 8px;
+      }
+
+      .card-footer {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .run-button {
+        min-width: 148px;
+      }
+
+      .run-button .spinner {
+        display: none;
+      }
+
+      .run-button.is-loading .label {
+        opacity: 0.7;
+      }
+
+      .run-button.is-loading .spinner {
+        display: inline-block;
+      }
+
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.28);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .run-status {
+        font-size: 0.92rem;
+        color: #b7c7ea;
+        min-height: 1.4em;
+      }
+
+      .run-status strong {
+        color: #fff;
+      }
+
+      .result {
+        display: grid;
+        gap: 14px;
+        margin-top: 8px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(143, 168, 255, 0.16);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .result.hidden {
+        display: none;
+      }
+
+      .result.band-high {
+        border-color: rgba(110, 231, 183, 0.24);
+        background: linear-gradient(180deg, rgba(16, 38, 33, 0.72), rgba(11, 25, 31, 0.72));
+      }
+
+      .result.band-medium {
+        border-color: rgba(251, 191, 36, 0.24);
+        background: linear-gradient(180deg, rgba(42, 31, 9, 0.72), rgba(24, 22, 10, 0.72));
+      }
+
+      .result.band-low {
+        border-color: rgba(251, 113, 133, 0.24);
+        background: linear-gradient(180deg, rgba(39, 18, 26, 0.78), rgba(22, 11, 16, 0.78));
+      }
+
+      .result-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .confidence-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 0.82rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .band-high .confidence-pill {
+        color: #a6f4cf;
+        background: rgba(110, 231, 183, 0.08);
+        border-color: rgba(110, 231, 183, 0.2);
+      }
+
+      .band-medium .confidence-pill {
+        color: #ffe08a;
+        background: rgba(251, 191, 36, 0.08);
+        border-color: rgba(251, 191, 36, 0.2);
+      }
+
+      .band-low .confidence-pill {
+        color: #ffb8c4;
+        background: rgba(251, 113, 133, 0.08);
+        border-color: rgba(251, 113, 133, 0.2);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(143, 168, 255, 0.16);
+        background: rgba(255, 255, 255, 0.03);
+        color: #dbe4fb;
+        font-size: 0.84rem;
+      }
+
+      .status-badge .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent-2);
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric {
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .metric span {
+        display: block;
+        color: #9eb0da;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 6px;
+      }
+
+      .metric strong {
+        display: block;
+        color: #f5f8ff;
+        font-size: 0.96rem;
+        line-height: 1.5;
+        word-break: break-word;
+      }
+
+      .ruling-box {
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .ruling-box .label {
+        display: block;
+        color: #9eb0da;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 8px;
+      }
+
+      .ruling-box p {
+        margin: 0;
+        white-space: pre-wrap;
+        color: #eef3ff;
+        line-height: 1.7;
+      }
+
+      .facts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .facts-column {
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .facts-column h4 {
+        margin: 0 0 10px;
+        font-size: 0.86rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #b7c7ea;
+      }
+
+      .fact-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .fact-item {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(10, 18, 32, 0.8);
+        border: 1px solid rgba(143, 168, 255, 0.12);
+      }
+
+      .fact-item strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.92rem;
+      }
+
+      .fact-item span {
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.5;
+      }
+
+      .evidence-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .evidence-item {
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .evidence-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+
+      .evidence-top strong {
+        font-size: 0.93rem;
+      }
+
+      .score-badge {
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(143, 168, 255, 0.12);
+        color: #f4f7ff;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+
+      .score-bar {
+        height: 8px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(143, 168, 255, 0.08);
+        margin: 10px 0 8px;
+      }
+
+      .score-bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      }
+
+      .evidence-item p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.55;
+      }
+
+      .detail-block {
+        border: 1px solid rgba(143, 168, 255, 0.14);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        overflow: hidden;
+      }
+
+      .detail-block summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 12px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        color: #dbe4fb;
+        font-weight: 600;
+      }
+
+      .detail-block summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .detail-block summary span {
+        color: #9eb0da;
+        font-weight: 500;
+        font-size: 0.86rem;
+      }
+
+      .detail-block .code-wrap {
+        border-top: 1px solid rgba(143, 168, 255, 0.12);
+        max-height: 430px;
+        overflow: auto;
+      }
+
+      pre {
+        margin: 0;
+        padding: 14px;
+        overflow: auto;
+        font-size: 0.82rem;
+        line-height: 1.6;
+        color: #d9e4ff;
+        background: rgba(8, 15, 28, 0.95);
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      .empty-response {
+        padding: 14px;
+        color: #9eb0da;
+      }
+
+      .footer {
+        padding: 34px 0 56px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .footer-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+        border-top: 1px solid rgba(143, 168, 255, 0.12);
+        padding-top: 20px;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      @media (max-width: 1080px) {
+        .hero-grid,
+        .demos-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .container {
+          width: min(var(--max), calc(100% - 24px));
+        }
+
+        .topbar-inner {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .nav {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .hero {
+          padding: 56px 0 28px;
+        }
+
+        h1 {
+          max-width: 100%;
+        }
+
+        .mini-grid,
+        .result-grid,
+        .facts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="container topbar-inner">
+          <a class="brand" href="./index.html" aria-label="AgentCourt home">
+            <span class="brand-mark">A</span>
+            <span>AgentCourt</span>
+          </a>
+          <nav class="nav" aria-label="Primary">
+            <a href="#demos">Live demos</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="https://agentcourt-api-production.up.railway.app/docs" target="_blank" rel="noreferrer">API docs</a>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="container hero-grid">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-dot"></span> Live production rulings via <span class="mono">POST /v1/disputes</span></div>
+              <h1>Watch disputes resolve in real time.</h1>
+              <p class="subheadline">
+                This standalone page sends three pre-built disputes directly to AgentCourt's production API and renders the ruling,
+                confidence band, matched rule, evidence scoring, and the raw request/response payloads.
+              </p>
+              <div class="actions">
+                <a class="button button-primary" href="#demos">Run the demos</a>
+                <a class="button button-secondary" href="https://agentcourt-api-production.up.railway.app/v1/disputes" target="_blank" rel="noreferrer">Open the endpoint</a>
+              </div>
+              <div class="meta-row">
+                <div class="meta-item">Dark theme matches the main landing page</div>
+                <div class="meta-item">No build step, no dependencies</div>
+                <div class="meta-item">Mobile responsive</div>
+              </div>
+            </div>
+
+            <aside class="hero-card" id="how-it-works">
+              <div class="panel-header">
+                <p class="panel-title">Demo overview</p>
+                <div class="status-pill"><span class="status-dot"></span> Live API enabled</div>
+              </div>
+
+              <div class="mini-grid">
+                <div class="mini-stat">
+                  <span>3</span>
+                  <small>Pre-built disputes with realistic evidence bundles</small>
+                </div>
+                <div class="mini-stat">
+                  <span>1</span>
+                  <small>Direct production endpoint: <span class="mono">agentcourt-api-production.up.railway.app</span></small>
+                </div>
+                <div class="mini-stat">
+                  <span>JSON</span>
+                  <small>Request and response shown in collapsible code blocks</small>
+                </div>
+                <div class="mini-stat">
+                  <span>Live</span>
+                  <small>Each button triggers a real POST request</small>
+                </div>
+              </div>
+
+              <div class="signal">
+                <span class="signal-label">What you get</span>
+                <p class="signal-value">
+                  Confidence band, matched rule ID, full ruling text, remedy, established vs. unknown facts, and evidence scores — all rendered without leaving the page.
+                </p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="demos">
+          <div class="container">
+            <div class="section-head">
+              <div class="section-kicker">Live demo disputes</div>
+              <h2>Three scenarios, three live API calls.</h2>
+              <p class="section-copy">
+                The demos below are intentionally varied: a clear non-delivery dispute, a late-payment milestone case, and a bug bounty claim that fails the reproducibility test.
+                Each card sends a structured JSON body to the production AgentCourt API and then displays the ruling and raw payloads.
+              </p>
+            </div>
+
+            <div class="cards demos-grid" id="demo-grid"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="container footer-line">
+          <div>Built as a standalone HTML demo for AgentCourt.</div>
+          <div>Endpoint: <span class="mono">https://agentcourt-api-production.up.railway.app/v1/disputes</span></div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const API_URL = 'https://agentcourt-api-production.up.railway.app/v1/disputes';
+
+      const demos = [
+        {
+          id: 'demo-1',
+          icon: '01',
+          title: 'Freelancer Misses Deadline',
+          policy: 'freelance-delivery',
+          claimant: 'Client Co',
+          respondent: 'Dev LLC',
+          claim: 'Developer missed the delivery deadline.',
+          desired_remedy: 'Refund deposit and complete handoff of work product.',
+          synopsis:
+            'Client claims the developer never delivered the mobile app by the deadline. The contract and messages show no delivery after the agreed date.',
+          contract: {
+            parties: ['Client Co', 'Dev LLC'],
+            obligations: ['Deliver the mobile app by the agreed deadline', 'Hand over the repository and build artifacts on acceptance'],
+            deadlines: ['2026-05-01'],
+            deliverables: ['iOS app', 'Android app', 'handoff package'],
+            payment_terms: '50% deposit, balance upon delivery',
+            raw_contract:
+              'The developer must deliver the mobile app by the deadline and transfer the repository, builds, and release notes on acceptance.'
+          },
+          evidence: [
+            {
+              type: 'contract',
+              source: 'signed_agreement.pdf',
+              timestamp: '2026-05-01T10:00:00Z',
+              claimed_fact: 'Delivery was due on 2026-05-01',
+              reliability: 'high',
+              notes: 'Signed by both parties and includes delivery deadline.'
+            },
+            {
+              type: 'messages',
+              source: 'slack-thread-archive',
+              timestamp: '2026-05-03T09:30:00Z',
+              claimed_fact: 'Client asked for the deliverable after the deadline and received no handoff',
+              reliability: 'high',
+              notes: 'No link, no repository handoff, no shipment confirmation.'
+            }
+          ]
+        },
+        {
+          id: 'demo-2',
+          icon: '02',
+          title: 'Unpaid Milestone',
+          policy: 'milestone-payment',
+          claimant: 'Studio Forge',
+          respondent: 'Acme Commerce',
+          claim: 'Agency completed the milestone, but the client has not paid after 14 days even though the terms required payment within 7 days.',
+          desired_remedy: 'Release the milestone payment immediately.',
+          synopsis:
+            'Agency says the milestone was completed and accepted, but payment is still outstanding beyond the seven-day window in the contract.',
+          contract: {
+            parties: ['Studio Forge', 'Acme Commerce'],
+            obligations: ['Complete milestone 2: checkout flow', 'Pay within 7 days after milestone acceptance'],
+            deadlines: ['2026-05-10', '2026-05-17'],
+            deliverables: ['Checkout flow milestone implementation'],
+            payment_terms: 'Net 7 after acceptance',
+            raw_contract:
+              'Client must pay within seven days after milestone acceptance. The agency completed milestone 2 and submitted the invoice immediately after acceptance.'
+          },
+          evidence: [
+            {
+              type: 'project-management-log',
+              source: 'jira-ticket-402',
+              timestamp: '2026-05-10T16:45:00Z',
+              claimed_fact: 'Milestone marked complete in the project tracker',
+              reliability: 'high',
+              notes: 'Task moved to Done with acceptance notes attached.'
+            },
+            {
+              type: 'invoice',
+              source: 'invoice-204.pdf',
+              timestamp: '2026-05-10T17:00:00Z',
+              claimed_fact: 'Invoice sent with a 7-day payment window',
+              reliability: 'high',
+              notes: 'Invoice issued the same day the milestone was completed.'
+            },
+            {
+              type: 'email',
+              source: 'followup-email-thread',
+              timestamp: '2026-05-24T09:00:00Z',
+              claimed_fact: 'No payment received after 14 days',
+              reliability: 'high',
+              notes: 'Reminder email unanswered; balance remains open.'
+            }
+          ]
+        },
+        {
+          id: 'demo-3',
+          icon: '03',
+          title: 'Invalid Bug Bounty Claim',
+          policy: 'bug-bounty',
+          claimant: 'Researcher One',
+          respondent: 'SecureApp Inc.',
+          claim: 'Researcher claims a bug bounty, but the bug cannot be reproduced after 5 attempts and the protocol denies payout.',
+          desired_remedy: 'Pay full bounty amount.',
+          synopsis:
+            'The researcher submitted a finding, but the security team could not reproduce it after five attempts and the bounty protocol denies payout without reproducibility.',
+          contract: {
+            parties: ['Researcher One', 'SecureApp Inc.'],
+            obligations: ['Submit a reproducible vulnerability report', 'Pay bounty only for validated findings'],
+            deadlines: ['2026-05-20'],
+            deliverables: ['Reproducible vulnerability report with steps'],
+            payment_terms: 'Bounty payable only for reproducible, validated findings',
+            raw_contract:
+              'Bounty is payable only when the bug is reproduced and confirmed under the program protocol.'
+          },
+          evidence: [
+            {
+              type: 'bug-report',
+              source: 'report-17.md',
+              timestamp: '2026-05-20T08:15:00Z',
+              claimed_fact: 'Report alleges unauthorized access through a web endpoint',
+              reliability: 'medium',
+              notes: 'Initial report lacked precise step-by-step reproduction instructions.'
+            },
+            {
+              type: 'reproduction-log',
+              source: 'secops-notes',
+              timestamp: '2026-05-21T12:00:00Z',
+              claimed_fact: 'Bug failed to reproduce in five independent attempts',
+              reliability: 'high',
+              notes: 'Security team repeated the test using the documented environment.'
+            },
+            {
+              type: 'protocol-decision',
+              source: 'bounty-review-queue',
+              timestamp: '2026-05-21T14:00:00Z',
+              claimed_fact: 'Protocol denies payout for non-reproducible findings',
+              reliability: 'high',
+              notes: 'Review panel marked the claim invalid under bounty rules.'
+            }
+          ]
+        }
+      ];
+
+      const demoGrid = document.getElementById('demo-grid');
+
+      function deepClone(value) {
+        return typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+      }
+
+      function cloneRequest(demo) {
+        return {
+          claimant: demo.claimant,
+          respondent: demo.respondent,
+          contract: deepClone(demo.contract),
+          claim: demo.claim,
+          desired_remedy: demo.desired_remedy,
+          policy: demo.policy,
+          evidence: deepClone(demo.evidence),
+          metadata: {
+            demo_id: demo.id,
+            demo_name: demo.title,
+            source: 'landing-demo',
+            ui: 'agentcourt-demos'
+          }
+        };
+      }
+
+      function prettyJson(value) {
+        return JSON.stringify(value, null, 2);
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      function confidenceClass(confidence) {
+        const value = (confidence || '').toLowerCase();
+        if (value.includes('high')) return 'band-high';
+        if (value.includes('medium')) return 'band-medium';
+        return 'band-low';
+      }
+
+      function confidenceLabel(confidence) {
+        const value = (confidence || 'unknown').toString().toUpperCase();
+        return value;
+      }
+
+      function factItemsToHtml(items, emptyLabel) {
+        if (!Array.isArray(items) || items.length === 0) {
+          return `<div class="fact-item"><strong>None</strong><span>${escapeHtml(emptyLabel)}</span></div>`;
+        }
+
+        return items
+          .map((item) => {
+            const fact = item.fact ?? 'unknown_fact';
+            const value = item.value ?? item.reason ?? '—';
+            const detail = item.reason ? `Reason: ${item.reason}` : `Value: ${value}`;
+            return `<div class="fact-item"><strong>${escapeHtml(fact)}</strong><span>${escapeHtml(detail)}</span></div>`;
+          })
+          .join('');
+      }
+
+      function evidenceScoresToHtml(items) {
+        if (!Array.isArray(items) || items.length === 0) {
+          return '<div class="evidence-item"><strong>No evidence scores returned.</strong><p>The API did not include evidence scores in the response.</p></div>';
+        }
+
+        return items
+          .map((item) => {
+            const score = Number(item.score ?? 0);
+            const width = Math.max(0, Math.min(100, score * 100));
+            return `
+              <div class="evidence-item">
+                <div class="evidence-top">
+                  <strong>${escapeHtml(item.type || 'evidence')}</strong>
+                  <span class="score-badge">${escapeHtml(score.toFixed(2))}</span>
+                </div>
+                <div class="score-bar" aria-hidden="true"><span style="width:${width}%"></span></div>
+                <p>${escapeHtml(`ID: ${item.id || 'n/a'} · Score: ${score.toFixed(2)}`)}</p>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      function renderCard(demo, index) {
+        const request = cloneRequest(demo);
+        const requestJson = prettyJson(request);
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-icon">${escapeHtml(demo.icon || String(index + 1).padStart(2, '0'))}</div>
+          <div class="card-header">
+            <div>
+              <h3>${escapeHtml(demo.title)}</h3>
+              <p>${escapeHtml(demo.synopsis)}</p>
+            </div>
+            <span class="pill"><strong>${escapeHtml(demo.policy)}</strong></span>
+          </div>
+
+          <div class="pill-row">
+            <span class="pill">Claimant: <strong>${escapeHtml(demo.claimant)}</strong></span>
+            <span class="pill">Respondent: <strong>${escapeHtml(demo.respondent)}</strong></span>
+          </div>
+
+          <span class="list-label">Evidence bundle</span>
+          <ul class="bullet-list">
+            ${demo.evidence
+              .map((item) => `<li><strong>${escapeHtml(item.type)}</strong> — ${escapeHtml(item.claimed_fact)}</li>`)
+              .join('')}
+          </ul>
+
+          <div class="card-footer">
+            <div class="button-row">
+              <button class="button button-primary run-button" type="button" data-demo-id="${escapeHtml(demo.id)}">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="label">Run Ruling</span>
+              </button>
+              <span class="run-status" id="status-${escapeHtml(demo.id)}">Ready to POST a live dispute to the API.</span>
+            </div>
+
+            <details class="detail-block">
+              <summary>
+                Request JSON
+                <span>${escapeHtml(demo.policy)}</span>
+              </summary>
+              <div class="code-wrap">
+                <pre><code class="json" id="request-${escapeHtml(demo.id)}">${escapeHtml(requestJson)}</code></pre>
+              </div>
+            </details>
+
+            <div class="result hidden" id="result-${escapeHtml(demo.id)}" aria-live="polite"></div>
+          </div>
+        `;
+
+        const requestCode = card.querySelector('#request-' + demo.id);
+        requestCode.textContent = requestJson;
+
+        const button = card.querySelector('[data-demo-id="' + demo.id + '"]');
+        const statusEl = card.querySelector('#status-' + demo.id);
+        const resultEl = card.querySelector('#result-' + demo.id);
+
+        button.addEventListener('click', async () => {
+          const body = cloneRequest(demo);
+          const bodyJson = prettyJson(body);
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 45000);
+
+          button.disabled = true;
+          button.classList.add('is-loading');
+          statusEl.innerHTML = 'Sending live request to <strong>POST /v1/disputes</strong>...';
+          resultEl.className = 'result hidden';
+          resultEl.innerHTML = '';
+
+          try {
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: bodyJson,
+              signal: controller.signal
+            });
+
+            const responseText = await response.text();
+            let parsed;
+            try {
+              parsed = responseText ? JSON.parse(responseText) : null;
+            } catch {
+              parsed = null;
+            }
+
+            if (!response.ok) {
+              const message = parsed?.detail ? prettyJson(parsed.detail) : responseText || `HTTP ${response.status}`;
+              throw new Error(message);
+            }
+
+            renderSuccess(resultEl, parsed, body);
+            statusEl.innerHTML = `Live ruling received: <strong>${escapeHtml(confidenceLabel(parsed?.confidence))}</strong> confidence, rule <strong>${escapeHtml(parsed?.matched_rule_id || 'n/a')}</strong>.`;
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } catch (error) {
+            renderError(resultEl, error, body);
+            const message = error?.name === 'AbortError' ? 'Request timed out.' : 'API request failed.';
+            statusEl.textContent = message;
+          } finally {
+            clearTimeout(timeout);
+            button.disabled = false;
+            button.classList.remove('is-loading');
+          }
+        });
+
+        return card;
+      }
+
+      function renderSuccess(resultEl, data, requestBody) {
+        const bandClass = confidenceClass(data?.confidence);
+        const confidence = confidenceLabel(data?.confidence);
+        const responseJson = prettyJson(data);
+
+        resultEl.className = `result ${bandClass}`;
+        resultEl.innerHTML = `
+          <div class="result-head">
+            <span class="confidence-pill">${escapeHtml(confidence)} confidence</span>
+            <span class="status-badge"><span class="dot"></span>${escapeHtml(data?.status || 'ruled')}</span>
+          </div>
+
+          <div class="result-grid">
+            <div class="metric"><span>Matched rule</span><strong>${escapeHtml(data?.matched_rule_id || 'n/a')}</strong></div>
+            <div class="metric"><span>Remedy</span><strong>${escapeHtml(data?.remedy || 'n/a')}</strong></div>
+            <div class="metric"><span>Case ID</span><strong>${escapeHtml(data?.case_id || 'n/a')}</strong></div>
+            <div class="metric"><span>Policy</span><strong>${escapeHtml(data?.policy_name || requestBody.policy || 'n/a')} · ${escapeHtml(data?.policy_version || 'n/a')}</strong></div>
+          </div>
+
+          <div class="ruling-box">
+            <span class="label">Full ruling text</span>
+            <p>${escapeHtml(data?.ruling || 'No ruling text returned.')}</p>
+          </div>
+
+          <div class="ruling-box">
+            <span class="label">Reasoning</span>
+            <p>${escapeHtml(data?.reasoning || 'No reasoning returned.')}</p>
+          </div>
+
+          <div class="facts-grid">
+            <div class="facts-column">
+              <h4>Facts established</h4>
+              <div class="fact-list">
+                ${factItemsToHtml(data?.facts_established, 'No established facts returned.')}
+              </div>
+            </div>
+            <div class="facts-column">
+              <h4>Facts unknown</h4>
+              <div class="fact-list">
+                ${factItemsToHtml(data?.facts_unknown, 'No unknown facts returned.')}
+              </div>
+            </div>
+          </div>
+
+          <div class="facts-column">
+            <h4 style="margin:0 0 10px;">Evidence scores</h4>
+            <div class="evidence-list">
+              ${evidenceScoresToHtml(data?.evidence_scores)}
+            </div>
+          </div>
+
+          <details class="detail-block" open>
+            <summary>
+              Response JSON
+              <span>Live API payload</span>
+            </summary>
+            <div class="code-wrap">
+              <pre><code class="json">${escapeHtml(responseJson)}</code></pre>
+            </div>
+          </details>
+        `;
+      }
+
+      function renderError(resultEl, error, requestBody) {
+        const responseJson = prettyJson({
+          error: error?.message || 'Unknown error',
+          request: requestBody,
+          api: API_URL
+        });
+
+        resultEl.className = 'result band-low';
+        resultEl.innerHTML = `
+          <div class="result-head">
+            <span class="confidence-pill">ERROR</span>
+            <span class="status-badge"><span class="dot"></span>Request failed</span>
+          </div>
+          <div class="ruling-box">
+            <span class="label">What happened</span>
+            <p>${escapeHtml(error?.name === 'AbortError' ? 'The API request timed out before a ruling was returned.' : (error?.message || 'Unknown error'))}</p>
+          </div>
+          <details class="detail-block" open>
+            <summary>
+              Response JSON
+              <span>Error payload</span>
+            </summary>
+            <div class="code-wrap">
+              <pre><code class="json">${escapeHtml(responseJson)}</code></pre>
+            </div>
+          </details>
+        `;
+        resultEl.classList.remove('hidden');
+      }
+
+      demos.forEach((demo, index) => {
+        demoGrid.appendChild(renderCard(demo, index));
+      });
+    </script>
+  </body>
+</html>

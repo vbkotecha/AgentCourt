@@ -127,6 +127,10 @@ def extract_facts(
     Returns a dict of fact_name → value (true/false/None/number/string).
     """
     facts = {}
+    
+    # Null-safe accessors
+    contract = dispute.get("contract") or {}
+    metadata = dispute.get("metadata") or {}
 
     # --- Delivery facts (freelance/milestone) ---
     delivery_evidence = [e for e in scored_evidence if e.get("type") in ("commit", "file", "screenshot", "log")]
@@ -150,8 +154,7 @@ def extract_facts(
         facts["deliverable_was_accepted"] = None
 
     # Delivery timing
-    contract = dispute.get("contract", {})
-    deadlines = contract.get("deadlines", [])
+    deadlines = contract.get("deadlines") or []
     if deadlines and delivery_evidence:
         try:
             deadline = datetime.fromisoformat(deadlines[0].replace("Z", ""))
@@ -180,7 +183,7 @@ def extract_facts(
     # --- Milestone facts ---
     progress_evidence = [e for e in scored_evidence if "progress" in e.get("claimed_fact", "").lower() or "%" in e.get("claimed_fact", "")]
     facts["milestone_completed"] = facts.get("deliverable_was_accepted")
-    facts["milestone_progress_pct"] = dispute.get("metadata", {}).get("progress_pct", 0)
+    facts["milestone_progress_pct"] = metadata.get("progress_pct", 0)
 
     # --- Bug bounty facts ---
     repro_evidence = [e for e in scored_evidence if "reproduc" in e.get("claimed_fact", "").lower()]
@@ -192,15 +195,14 @@ def extract_facts(
     else:
         facts["bug_is_reproducible"] = None
 
-    facts["reproduction_attempts"] = dispute.get("metadata", {}).get("reproduction_attempts", 0)
-    facts["severity_meets_threshold"] = dispute.get("metadata", {}).get("severity_meets_threshold")
-    facts["actual_severity"] = dispute.get("metadata", {}).get("actual_severity")
-    facts["disclosure_compliant"] = dispute.get("metadata", {}).get("disclosure_compliant")
+    facts["reproduction_attempts"] = metadata.get("reproduction_attempts", 0)
+    facts["severity_meets_threshold"] = metadata.get("severity_meets_threshold")
+    facts["actual_severity"] = metadata.get("actual_severity")
+    facts["disclosure_compliant"] = metadata.get("disclosure_compliant")
 
     # ─── MERGE METADATA FACTS (highest priority) ────────────────────────────
     # Metadata-provided facts override extracted facts — they're explicit declarations
     # from the submitter (e.g., milestone_completed, days_since_completion, payment_terms_days)
-    metadata = dispute.get("metadata", {})
     for key, val in metadata.items():
         if val is not None:
             facts[key] = val
@@ -351,12 +353,14 @@ def generate_ruling(
     policy: dict,
 ) -> dict:
     """Generate the full structured ruling."""
+    # Null-safe metadata for template variable lookup
+    local_metadata = dispute.get("metadata") or {}
     # Format the ruling template with fact values
     template = matched_rule.get("ruling_template", "Ruling could not be generated.")
     # Replace {var} placeholders — fill with fact value or "N/A"
     def _replace_var(m):
         var = m.group(1)
-        val = facts.get(var, dispute.get("metadata", {}).get(var))
+        val = facts.get(var, local_metadata.get(var))
         if val is not None:
             return str(val)
         return "N/A"

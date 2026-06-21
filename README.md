@@ -1,89 +1,115 @@
-# AgentCourt v1 — Ruling API
+# AgentCourt
 
-**One endpoint. Structured disputes. Instant rulings.**
+**The dispute layer for agent commerce.**
+
+Submit evidence. Apply policy rules. Get a ruling. No escrow, no courtroom theater.
+
+## Live API
+
+**Base URL:** `https://agentcourt-api-production.up.railway.app`
+**Docs:** `https://agentcourt-api-production.up.railway.app/docs`
 
 ## Quick Start
 
-```bash
-pip install -r requirements.txt
-export OPENAI_API_KEY=your-key
-uvicorn src.main:app --host 0.0.0.0 --port 8000
-```
+```python
+from agentcourt import AgentCourt
 
-## API
+court = AgentCourt()
 
-### POST /dispute
-
-Submit a dispute and get a ruling.
-
-**Request:**
-```json
-{
-  "claimant": "agent-alice",
-  "respondent": "agent-bob",
-  "contract": {
-    "parties": ["agent-alice", "agent-bob"],
-    "obligations": ["Build landing page with 3 sections", "Deliver by June 15"],
-    "deadlines": ["2026-06-15T23:59:00Z"],
-    "deliverables": ["Landing page HTML/CSS", "Responsive design"],
-    "payment_terms": "500 USDC on delivery"
-  },
-  "claim": "Agent-bob delivered a single-page site with only 1 section, 2 days late",
-  "desired_remedy": "Partial payment of 200 USDC for incomplete work",
-  "evidence": [
-    {
-      "type": "contract",
-      "source": "agent-alice",
-      "timestamp": "2026-06-01T10:00:00Z",
-      "claimed_fact": "Contract specifies 3 sections",
-      "excerpt": "Deliverable: Landing page with hero, features, and pricing sections",
-      "reliability": "high"
+ruling = court.dispute(
+    claimant="ClientCorp",
+    respondent="DevStudio",
+    contract={
+        "obligations": ["Build mobile app"],
+        "deadlines": ["2026-07-01T23:59:00Z"],
+        "deliverables": ["iOS app", "Android app"],
     },
-    {
-      "type": "screenshot",
-      "source": "agent-alice",
-      "timestamp": "2026-06-17T14:00:00Z",
-      "claimed_fact": "Only 1 section was delivered",
-      "excerpt": "Screenshot of delivered page showing only hero section",
-      "reliability": "high"
-    }
-  ]
-}
+    claim="Developer never delivered the app",
+    desired_remedy="Full refund of deposit",
+    policy="freelance-delivery",
+    evidence=[
+        {
+            "type": "contract",
+            "source": "ClientCorp",
+            "timestamp": "2026-06-01T10:00:00Z",
+            "claimed_fact": "Signed contract, no deliverable received",
+            "reliability": "high",
+        }
+    ],
+)
+
+print(ruling.confidence)  # high
+print(ruling.remedy)      # full_refund
+print(ruling.ruling)      # The respondent failed to deliver...
 ```
 
-**Response:**
-```json
-{
-  "case_id": "a1b2c3d4",
-  "status": "ruled",
-  "confidence": "high",
-  "ruling": "Partial breach: respondent delivered incomplete work and missed deadline",
-  "reasoning": "1. Contract clearly specified 3 sections. 2. Evidence shows only 1 section delivered. 3. Deadline was June 15, delivery was June 17. 4. Failure is material (2/3 of scope missing).",
-  "remedy": "Claimant should pay 200 USDC (40% of contract) for the work completed",
-  "facts_established": [...],
-  "facts_disputed": [],
-  "facts_unknown": [],
-  "alternative_ruling": "If respondent proves the contract was amended to 1 section, full payment would be owed",
-  "ruled_at": "2026-06-18T00:58:00Z"
-}
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/v1/disputes` | Submit a dispute, get a ruling |
+| `GET` | `/v1/cases` | List all cases |
+| `GET` | `/v1/cases/{id}` | Get a specific case |
+| `GET` | `/v1/policies` | List policy templates |
+| `GET` | `/v1/policies/{name}` | Get policy details |
+| `GET` | `/health` | API health check |
+| `GET` | `/docs` | Interactive API docs (Swagger) |
+
+## Policy Templates
+
+### freelance-delivery
+Disputes over digital work delivery: non-delivery, late delivery, scope issues.
+
+**Rules:** non-delivery, late-delivery-accepted, late-delivery-rejected, partial-delivery, default-no-match
+
+### milestone-payment  
+Disputes over milestone payments: unpaid milestones, overdue payments, partial payments.
+
+**Rules:** milestone-completed-unpaid, milestone-completed-paid-on-time, milestone-incomplete-payment-justified, milestone-overdue-disputed, default-no-match
+
+### bug-bounty
+Disputes over bug bounty claims: reproducibility, severity, disclosure compliance.
+
+**Rules:** valid-bug-full-payout, non-reproducible-bug, severity-below-threshold, non-compliant-disclosure, default-no-match
+
+## How It Works
+
+1. **Submit evidence** — contracts, commits, logs, screenshots, payment records
+2. **Evidence scoring** — each item weighted by type, reliability, recency, and hash verification
+3. **Fact extraction** — structured facts derived from evidence + metadata
+4. **Policy matching** — facts evaluated against policy rules (deterministic)
+5. **Confidence band** — high/medium/low based on evidence quality and fact completeness
+6. **Ruling generated** — with remedy, full audit trail, and explainable reasoning
+
+## Key Design Decisions
+
+- **No escrow required** — rulings create consequences through reputation and enforcement, not custody
+- **Deterministic** — same evidence + policy always produces the same ruling
+- **Explainable** — every ruling shows which rule matched, which facts were established, and evidence scores
+- **Policy-first** — define rules upfront, not case-by-case
+- **API-first** — REST + SDK, integrate in minutes
+
+## SDK
+
+```bash
+pip install agentcourt  # coming soon
 ```
 
-### GET /cases — List all cases
-### GET /cases/{case_id} — Get specific case
-### GET /health — Health check
+Or copy `sdk/agentcourt.py` — zero dependencies, standard library only.
 
 ## Architecture
 
 ```
-POST /dispute
-  → Parse request
-  → Format judge prompt
-  → Call LLM (GPT-4o)
-  → Parse structured ruling
-  → Save case + ruling
-  → Return ruling
+src/
+├── main.py              # FastAPI app with REST endpoints
+├── engine/
+│   └── policy_engine.py # Deterministic rule evaluation engine
+└── policies/
+    ├── freelance-delivery.json
+    ├── milestone-payment.json
+    └── bug-bounty.json
 ```
 
-## Data Storage
+## License
 
-Cases stored as JSON files in `/root/.letta/agentcourt/data/` (persistent on Railway).
+MIT
