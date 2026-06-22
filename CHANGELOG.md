@@ -42,3 +42,57 @@ All notable changes to AgentCourt are documented in this file.
 - CORS enabled for all origins
 - Stateless architecture (no database required for v1)
 - Average ruling time: <500ms
+
+## [1.1.0] — 2026-06-22
+
+### Added — Protocol Compatibility
+- **ADRP adapter** (`src/engine/adrp_adapter.py`) — IETF draft-stone-adrp-00 compatibility
+  - Maps AgentCourt remedies → ADRP verdicts (release/refund/partial)
+  - Maps 21 policy rules → ADRP semantic claim codes
+  - Produces ADRP RulingBundle artifacts from AgentCourt rulings
+  - Implements `verify_ruling_bundle()` per ADRP Section 16.1
+  - Generates `EscrowDirective` for AP2/x402/VCAP payment rails
+  - Canonical JSON (JCS-compatible) for deterministic hashing
+  - Optional Ed25519 signing support
+  - 11/11 adapter tests passing
+- **BCP integration example** (`examples/bcp_integration.py`)
+  - Converts BCP DISPUTE state → AgentCourt dispute
+  - Extracts evidence from BCP session messages
+  - Generates BCP-compatible settlement directive
+  - Demonstrates full chain: BCP → AgentCourt → Settlement → ADRP
+
+### Added — Documentation
+- **ROADMAP.md** — 6 milestones, partnership targets, design partner program, non-goals
+- **FAQ.md** — 15 questions covering general, technical, integration, and security
+- **ADRP_COMPATIBILITY.md** — deep analysis of IETF draft-stone-adrp-00 alignment
+- **DEPLOY_FIX.md** — step-by-step Railway deploy fix guide
+- **STATUS_REPORT_JUN22.md** — overnight session summary for morning review
+
+### Added — Content
+- **8 blog posts/articles** covering market positioning, technical architecture, and ADRP implementation
+- **X/Twitter launch thread** (9 tweets) for @AgentCourtHQ
+- **Interactive demo script** (`scripts/demo.sh`) — 4 real scenarios, colorized output
+- **Investor pitch deck outline** (10 slides, confidential)
+
+### Added — Research
+- Competitive analysis of 4 competitors (Tribunal, BCP Protocol, ADRP, Arbitova)
+- June 2026 agent commerce landscape mapped
+- IETF draft-stone-adrp-00 full spec analyzed
+- Tribunal (kalashshah/tribunal) deep dive — LLM-based judge, 0G Chain, Gensyn AXL
+- BCP Protocol (lucidedev/bcp-protocol) deep dive — DISPUTE state has no resolver
+
+### Added — Community Files
+- **CONTRIBUTING.md** — contribution guide and policy template authoring
+- **CODE_OF_CONDUCT.md** — Contributor Covenant 2.1
+- **Dockerfile** — container build specification
+- **LICENSE** — MIT
+
+### Changed
+- Updated README competitive comparison table (4 competitors)
+- Added ADRP positioning note to README
+
+### Infrastructure
+- Total commits: 55
+- Total files: 73
+- Total tests: 28/28 passing (17 engine + 11 ADRP adapter)
+- Dependencies: standard library only (Python SDK + engine)
