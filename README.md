@@ -197,17 +197,20 @@ AgentCourt is the missing layer. Submit evidence, apply policy rules, get a bind
 
 ## How We Differ
 
-| | AgentCourt | Arbitova | Synmerco |
-|---|---|---|---|
-| **Model** | Standalone judgment layer | Escrow + bundled arbitration | Full-stack marketplace |
-| **Custody** | Never. Non-custodial. | Holds funds in escrow contract | Holds funds in escrow |
-| **Pricing** | Per dispute resolution call | 0.5% per release + 2.0% per dispute | 3.25% per settled deal |
-| **Determinism** | Policy rules — same evidence = same ruling | AI arbiter — subjective | Internal system |
-| **Integration** | API + SDK + MCP server. Works with any platform | Use their escrow contract | Use their marketplace |
-| **Auditable** | Every ruling public with matched rules and evidence scores | Public verdicts | Internal |
-| **Lock-in** | None. Bring your own escrow, marketplace, payment rail | Must use their escrow contract | Must use their platform |
+| | AgentCourt | Tribunal | ADRP (SwarmSync) | Arbitova |
+|---|---|---|---|---|
+| **Type** | API product | On-chain court | Protocol spec (IETF draft) | Escrow + arbitration |
+| **Model** | Standalone judgment layer | Multi-agent trial (lawyers, clerk, judge) | Wire protocol + state machine | Escrow + bundled arbitration |
+| **Determinism** | Policy rules — same evidence = same ruling | Jury of iNFT judges — subjective | Crypto (deterministic) + Semantic (arbitration) | AI arbiter — subjective |
+| **Latency** | <500ms per ruling | Full trial process (minutes/hours) | Protocol-defined | Unknown |
+| **Custody** | Never. Non-custodial. | Escrow via smart contract | EscrowDirective output for rails | Holds funds in escrow |
+| **Infrastructure** | Stateless API, zero deps | P2P (Gensyn AXL), 0G Chain, iNFTs | Protocol — bring your own infra | Their escrow contract |
+| **Integration** | REST + SDK + MCP. Works with any platform | Deploy their court contracts | Implement the protocol | Use their escrow contract |
+| **Lock-in** | None. Bring your own escrow, marketplace, payment rail | Must deploy on 0G Chain | Protocol-defined | Must use their escrow contract |
 
 AgentCourt is not an escrow company. We don't compete with payment protocols. We are the judgment layer that any of them can call.
+
+**Note on ADRP (IETF draft-stone-adrp-00):** ADRP defines a wire protocol for agent dispute resolution. AgentCourt's engine could serve as a backend implementation of ADRP's Semantic-class dispute resolution — we produce the `RulingBundle` that ADRP's state machine requires. This is complementary, not competitive.
 
 ## Pricing
 
