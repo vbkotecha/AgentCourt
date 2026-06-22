@@ -200,6 +200,17 @@ curl -X POST https://agentcourt-api-production.up.railway.app/v1/disputes \
 <tr><td><code>disputed-reproducibility</code></td><td style="color:var(--bad)">low</td><td>escalate</td></tr>
 </table>
 
+<h3>sla-monitoring</h3>
+<p>Disputes over Service Level Agreement violations: uptime, latency, availability.</p>
+<table>
+<tr><th>Rule</th><th>Confidence</th><th>Remedy</th></tr>
+<tr><td><code>uptime-violation</code></td><td style="color:var(--good)">high</td><td>service_credit</td></tr>
+<tr><td><code>latency-breach</code></td><td style="color:var(--good)">high</td><td>service_credit</td></tr>
+<tr><td><code>partial-degradation</code></td><td style="color:var(--warn)">medium</td><td>partial_credit</td></tr>
+<tr><td><code>incidents-within-sla</code></td><td style="color:var(--good)">high</td><td>deny_credit</td></tr>
+<tr><td><code>insufficient-monitoring</code></td><td style="color:var(--bad)">low</td><td>escalate</td></tr>
+</table>
+
 <h2 id="cases">Cases</h2>
 <div class="endpoint">
 <span class="method get">GET</span>
