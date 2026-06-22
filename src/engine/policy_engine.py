@@ -135,6 +135,10 @@ def extract_facts(
     # --- Delivery facts (freelance/milestone) ---
     delivery_evidence = [e for e in scored_evidence if e.get("type") in ("commit", "file", "screenshot", "log")]
     payment_evidence = [e for e in scored_evidence if e.get("type") in ("payment", "invoice", "receipt", "payment_proof")]
+    # Also detect payment from claimed_fact text — but EXCLUDE "no payment received"
+    payment_text_evidence = [e for e in scored_evidence if 
+        any(kw in e.get("claimed_fact", "").lower() for kw in ["payment received", "paid via", "payment sent", "payment confirmed", "usdc received", "usdc sent", "payment completed"])
+        and not any(neg in e.get("claimed_fact", "").lower() for neg in ["no payment", "not paid", "unpaid", "never paid", "no payment received"])]
     acceptance_evidence = [e for e in scored_evidence if "accept" in e.get("claimed_fact", "").lower() or "approv" in e.get("claimed_fact", "").lower()]
 
     # Evidence of delivery requires BOTH: delivery-type evidence AND claimed_fact indicating delivery occurred
@@ -146,13 +150,17 @@ def extract_facts(
     facts["evidence_of_delivery"] = len(actual_delivery_evidence) > 0
     # payment_received: True if evidence shows payment was sent, False if evidence shows no payment
     no_payment_evidence = [e for e in scored_evidence if "no payment" in e.get("claimed_fact", "").lower() or "not paid" in e.get("claimed_fact", "").lower() or "unpaid" in e.get("claimed_fact", "").lower() or "never paid" in e.get("claimed_fact", "").lower()]
-    if no_payment_evidence and not payment_evidence:
+    all_payment_evidence = payment_evidence + payment_text_evidence
+    if no_payment_evidence and not all_payment_evidence:
         facts["payment_received"] = False
-    elif no_payment_evidence and payment_evidence:
+    elif no_payment_evidence and all_payment_evidence:
         # Conflicting — buyer claims paid, seller claims not received
         facts["payment_received"] = None
+    elif all_payment_evidence:
+        # Payment evidence exists (by type or text) — trust it
+        facts["payment_received"] = True
     else:
-        facts["payment_received"] = any(p.get("score", 0) > 0.5 for p in payment_evidence)
+        facts["payment_received"] = False  # No payment evidence → not received
 
     # Determine acceptance
     accepted_mentions = len(acceptance_evidence)
@@ -199,15 +207,24 @@ def extract_facts(
     
     # Milestone completed if there's delivery evidence (commit/deploy) or explicit completion mention
     completion_keywords = ("complet", "deploy", "implement", "deliver", "finished", "done", "shipped")
+    incomplete_keywords = ("incomplete", "not complete", "partial", "missing", "not done", "unfinished", "only ", "40%", "70%", "not finished")
     completion_evidence = [
         e for e in scored_evidence 
         if any(kw in e.get("claimed_fact", "").lower() for kw in completion_keywords)
+    ]
+    incomplete_evidence = [
+        e for e in scored_evidence
+        if any(kw in e.get("claimed_fact", "").lower() for kw in incomplete_keywords)
     ]
     # Check if acceptance was acknowledged
     accepted_mentions = len([e for e in scored_evidence if "accept" in e.get("claimed_fact", "").lower() or "acknowledg" in e.get("claimed_fact", "").lower() or "approv" in e.get("claimed_fact", "").lower()])
     rejected_mentions = sum(1 for e in scored_evidence if "reject" in e.get("claimed_fact", "").lower())
     
-    if completion_evidence and accepted_mentions > 0:
+    if incomplete_evidence and not completion_evidence:
+        facts["milestone_completed"] = False
+    elif incomplete_evidence and len(incomplete_evidence) > len(completion_evidence):
+        facts["milestone_completed"] = False
+    elif completion_evidence and accepted_mentions > 0:
         facts["milestone_completed"] = True
     elif completion_evidence and not actual_delivery_evidence:
         facts["milestone_completed"] = True
