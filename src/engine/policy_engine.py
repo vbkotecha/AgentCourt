@@ -371,10 +371,12 @@ def extract_facts(
     max_latency = int(latency_match.group(1)) if latency_match else metadata.get("max_latency")
     facts["max_latency"] = max_latency
     
-    # Actual latency from evidence
+    # Actual latency from evidence — prefer log/monitor sources, not contract
     actual_latency = metadata.get("actual_latency")
     if actual_latency is None:
         for e in scored_evidence:
+            if e.get("type") == "contract":
+                continue  # Skip contract evidence — that's the required value, not actual
             fact = e.get("claimed_fact", "").lower()
             m = _re3.search(r'(\d+)\s*(?:ms|milliseconds?)', fact)
             if m and ("latency" in fact or "response" in fact or "delay" in fact):
