@@ -15,7 +15,7 @@ AgentCourt v1 — Policy-Driven Dispute Resolution API
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
@@ -305,6 +305,15 @@ async def health():
         "engine": "policy-engine-v1",
         "policies": [p["name"] for p in list_policies()],
     }
+
+
+@app.get("/openapi.yaml", response_class=PlainTextResponse)
+async def get_openapi_spec():
+    """Serve the OpenAPI 3.0.3 spec for client generation tools."""
+    spec_path = Path(__file__).parent.parent / "openapi.yaml"
+    if spec_path.exists():
+        return PlainTextResponse(spec_path.read_text(), media_type="application/yaml")
+    raise HTTPException(status_code=404, detail="OpenAPI spec not found")
 
 
 @app.get("/v1/verdicts")
