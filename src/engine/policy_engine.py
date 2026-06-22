@@ -168,10 +168,14 @@ def extract_facts(
     # Determine acceptance
     accepted_mentions = len(acceptance_evidence)
     rejected_mentions = sum(1 for e in scored_evidence if "reject" in e.get("claimed_fact", "").lower())
-    if accepted_mentions > rejected_mentions:
+    disputed_mentions = sum(1 for e in scored_evidence if "disput" in e.get("claimed_fact", "").lower())
+    if accepted_mentions > rejected_mentions and disputed_mentions == 0:
         facts["deliverable_was_accepted"] = True
     elif rejected_mentions > accepted_mentions:
         facts["deliverable_was_accepted"] = False
+    elif disputed_mentions > 0 or (accepted_mentions > 0 and rejected_mentions > 0):
+        # Conflicting or disputed acceptance → null
+        facts["deliverable_was_accepted"] = None
     elif not actual_delivery_evidence:
         # No delivery evidence at all → can't have been accepted
         facts["deliverable_was_accepted"] = False
@@ -219,10 +223,11 @@ def extract_facts(
     
     # Milestone completed if there's delivery evidence (commit/deploy) or explicit completion mention
     completion_keywords = ("complet", "deploy", "implement", "deliver", "finished", "done", "shipped")
-    incomplete_keywords = ("incomplete", "not complete", "partial", "missing", "not done", "unfinished", "only ", "40%", "70%", "not finished")
+    incomplete_keywords = ("incomplete", "not complete", "partial", "missing", "not done", "unfinished", "only ", "40%", "70%", "not finished", "% complete", "% done")
     completion_evidence = [
         e for e in scored_evidence 
         if any(kw in e.get("claimed_fact", "").lower() for kw in completion_keywords)
+        and not any(kw in e.get("claimed_fact", "").lower() for kw in incomplete_keywords)
     ]
     incomplete_evidence = [
         e for e in scored_evidence
@@ -309,25 +314,40 @@ def extract_facts(
             repro_attempts = max(repro_attempts, int(match.group(1)))
     facts["reproduction_attempts"] = metadata.get("reproduction_attempts", repro_attempts)
     
-    # Severity from evidence text
-    severity_evidence = [e for e in scored_evidence if "severity" in e.get("claimed_fact", "").lower() or "critical" in e.get("claimed_fact", "").lower() or "high" in e.get("claimed_fact", "").lower()]
-    facts["severity_meets_threshold"] = metadata.get("severity_meets_threshold", any("critical" in e.get("claimed_fact", "").lower() or "high severity" in e.get("claimed_fact", "").lower() for e in severity_evidence))
+    # Severity from evidence text — prefer independent assessment over researcher claim
+    severity_evidence = [e for e in scored_evidence if "severity" in e.get("claimed_fact", "").lower() or "critical" in e.get("claimed_fact", "").lower() or "high" in e.get("claimed_fact", "").lower() or "medium" in e.get("claimed_fact", "").lower()]
     
-    # Actual severity from evidence
-    if severity_evidence:
+    # Prefer independent assessment severity
+    independent_severity = None
+    for e in severity_evidence:
+        fact = e.get("claimed_fact", "").lower()
+        if "assess" in fact or "independent" in fact or "vendor rat" in fact or "triag" in fact:
+            if "critical" in fact: independent_severity = "critical"
+            elif "high" in fact: independent_severity = "high"
+            elif "medium" in fact: independent_severity = "medium"
+            elif "low" in fact: independent_severity = "low"
+            break
+    
+    # Fall back to any severity evidence
+    if independent_severity is None:
         for e in severity_evidence:
             fact = e.get("claimed_fact", "").lower()
-            if "critical" in fact:
-                facts["actual_severity"] = metadata.get("actual_severity", "critical")
+            if "critical" in fact and "claim" not in fact:
+                independent_severity = "critical"
                 break
             elif "high" in fact and "severity" in fact:
-                facts["actual_severity"] = metadata.get("actual_severity", "high")
+                independent_severity = "high"
                 break
-    facts["actual_severity"] = metadata.get("actual_severity", facts.get("actual_severity"))
+            elif "medium" in fact and "severity" in fact:
+                independent_severity = "medium"
+                break
+    
+    facts["actual_severity"] = metadata.get("actual_severity", independent_severity)
+    facts["severity_meets_threshold"] = metadata.get("severity_meets_threshold", independent_severity in ("critical", "high"))
     
     # Disclosure compliance from evidence
-    disclosure_evidence = [e for e in scored_evidence if "disclos" in e.get("claimed_fact", "").lower() or "responsible" in e.get("claimed_fact", "").lower()]
-    non_compliant_evidence = [e for e in scored_evidence if "non-compliant" in e.get("claimed_fact", "").lower() or "violated" in e.get("claimed_fact", "").lower()]
+    disclosure_evidence = [e for e in scored_evidence if any(kw in e.get("claimed_fact", "").lower() for kw in ["disclos", "responsible", "notified vendor", "private report"])]
+    non_compliant_evidence = [e for e in scored_evidence if any(kw in e.get("claimed_fact", "").lower() for kw in ["non-compliant", "violated", "published publicly", "public disclosure", "tweeted", "posted publicly", "leaked", "before vendor", "without notification", "publicly disclosed"])]
     if disclosure_evidence and not non_compliant_evidence:
         facts["disclosure_compliant"] = metadata.get("disclosure_compliant", True)
     elif non_compliant_evidence and not disclosure_evidence:
