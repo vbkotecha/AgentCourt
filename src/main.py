@@ -15,6 +15,7 @@ AgentCourt v1 — Policy-Driven Dispute Resolution API
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
@@ -270,9 +271,27 @@ async def root():
             "get_case": "GET /v1/cases/{case_id}",
             "health": "GET /health",
             "docs": "GET /docs",
+            "api_docs": "GET /api-docs",
         },
         "live": True,
     }
+
+
+@app.get("/api-docs", response_class=HTMLResponse)
+async def api_docs_page():
+    """Developer-friendly API documentation page."""
+    # Try multiple paths since Railway runs from src/
+    candidates = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "landing", "docs.html"),
+        os.path.join(os.getcwd(), "landing", "docs.html"),
+        os.path.join(os.getcwd(), "..", "landing", "docs.html"),
+        "/app/landing/docs.html",
+    ]
+    for docs_path in candidates:
+        if os.path.exists(docs_path):
+            with open(docs_path) as f:
+                return f.read()
+    return HTMLResponse(content="<h1>API Docs</h1><p>Docs page not found on server. Visit <a href='/docs'>/docs</a> for Swagger.</p>", status_code=200)
 
 
 @app.get("/health")
@@ -312,8 +331,6 @@ async def list_verdicts(limit: int = 50):
         "verdicts": verdicts,
     }
 
-
-from fastapi.responses import HTMLResponse
 
 @app.get("/verdicts", response_class=HTMLResponse)
 async def verdict_dashboard():
