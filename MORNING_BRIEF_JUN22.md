@@ -1,7 +1,7 @@
 # Morning Brief — June 22, 2026
 
 ## TL;DR
-The AgentCourt codebase is complete and production-ready. 59 commits, 75 files, 28/28 tests passing. The only blocker to going live is a Railway token refresh + GitHub push (~5 min of your time). Market timing is exceptional — agent commerce exploded in June 2026 with Visa, Mastercard, AWS, and Shopify all shipping, none with a dispute layer.
+The AgentCourt codebase is complete and production-ready. **63 commits, 79 files, 28/28 tests passing, 6 policy templates (34 rules).** The only blocker to going live is a Railway token refresh + GitHub push (~5 min of your time). Market timing is exceptional — agent commerce exploded in June 2026 with Visa, Mastercard, AWS, and Shopify all shipping, none with a dispute layer. **Two concrete partnership proposals ready (AgentCash + Rye) with custom policy templates already built.**
 
 ---
 
@@ -81,15 +81,35 @@ June 2026 developments prove the market is ready NOW:
 
 | Metric | Value |
 |--------|-------|
-| Commits | 59 |
-| Files | 75 |
+| Commits | 63 |
+| Files | 79 |
 | Tests | 28/28 passing |
-| Blog posts | 9 |
+| Policy templates | 6 (34 total rules) |
+| Blog posts | 10 |
 | MoltX accounts contacted | 16 |
-| MoltX feed posts | 10+ |
+| MoltX feed posts | 11+ |
 | Competitors analyzed | 4 |
 | IETF specs analyzed | 1 (draft-stone-adrp-00) |
-| Documentation files | 15 |
+| Partnership proposals | 2 (AgentCash + Rye) |
+| Documentation files | 16 |
+
+---
+
+## Partnership Proposals Ready
+
+### 1. AgentCash (HIGHEST PRIORITY)
+- **Why:** Most widely used x402 MCP client. 3,200+ paid APIs. Zero dispute resolution.
+- **Proposal:** `content/partner_proposal_agentcash.md`
+- **Custom template:** `src/policies/api-quality.json` (7 rules, ready to use)
+- **Integration:** Add `agentcourt_dispute` MCP tool to AgentCash
+- **Their docs:** agentcash.dev — reach out via their Discord or GitHub
+
+### 2. Rye (HIGH PRIORITY)
+- **Why:** x402 physical commerce — agents buying products online. Returns fully manual.
+- **Analysis:** Saved in archival memory
+- **Custom template:** `src/policies/physical-commerce.json` (6 rules, ready to use)
+- **Integration:** Automate the manual return mediation their docs describe
+- **Their docs:** rye.com/docs/returns — reach out via their developer channels
 
 ---
 
@@ -97,9 +117,9 @@ June 2026 developments prove the market is ready NOW:
 
 1. **Fix Railway token** → API goes live → run `scripts/demo.sh` to verify
 2. **Push to GitHub** → public repo → update MoltX/X with link
-3. **Post launch thread on X** → use content from blog posts
-4. **DM AgentCash** — they handle x402 wallets, no dispute layer, perfect partner
-5. **DM Rye** — they handle agent-to-physical checkout, massive dispute surface
+3. **Email AgentCash** — send partnership proposal, they're the best partner fit
+4. **Email Rye** — send physical-commerce proposal, massive dispute surface
+5. **Post launch thread on X** → use content from blog posts
 6. **Apply to x402 Foundation** grants (if any exist)
 7. **Reach out to Adyen** — they shipped Adyen Agentic without dispute resolution
 
