@@ -72,6 +72,11 @@ Disputes over bug bounty claims: reproducibility, severity, disclosure complianc
 
 **Rules:** valid-bug-full-payout, non-reproducible-bug, severity-below-threshold, non-compliant-disclosure, default-no-match
 
+### sla-monitoring
+Disputes over Service Level Agreement violations: uptime, latency, response time, availability.
+
+**Rules:** uptime-violation, latency-breach, partial-degradation, incidents-within-sla, insufficient-monitoring
+
 ## How It Works
 
 1. **Submit evidence** — contracts, commits, logs, screenshots, payment records
@@ -149,7 +154,8 @@ Compatible with Letta, Claude, and any MCP-compatible agent framework.
 │   └── policies/
 │       ├── freelance-delivery.json
 │       ├── milestone-payment.json
-│       └── bug-bounty.json
+│       ├── bug-bounty.json
+│       └── sla-monitoring.json
 ├── sdk/
 │   ├── agentcourt.py        # Python SDK (zero-dependency)
 │   └── npm/                 # JavaScript/TypeScript SDK

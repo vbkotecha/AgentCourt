@@ -1,0 +1,47 @@
+{
+  "name": "sla-monitoring",
+  "version": "1.0.0",
+  "description": "Disputes over Service Level Agreement violations: uptime, latency, response time, availability",
+  "rules": [
+    {
+      "id": "uptime-violation",
+      "name": "SLA Uptime Breach",
+      "condition": "actual_uptime < required_uptime AND monitoring_period_confirmed == true",
+      "confidence": "high",
+      "remedy": "service_credit",
+      "description": "Service uptime fell below the agreed SLA threshold during the monitoring period"
+    },
+    {
+      "id": "latency-breach",
+      "name": "SLA Latency Violation",
+      "condition": "actual_latency > max_latency AND monitoring_period_confirmed == true",
+      "confidence": "high",
+      "remedy": "service_credit",
+      "description": "Response latency exceeded the maximum agreed threshold"
+    },
+    {
+      "id": "partial-degradation",
+      "name": "Partial Service Degradation",
+      "condition": "actual_uptime < required_uptime AND actual_uptime >= degraded_threshold AND monitoring_period_confirmed == true",
+      "confidence": "medium",
+      "remedy": "partial_credit",
+      "description": "Service experienced partial degradation but did not fully breach SLA"
+    },
+    {
+      "id": "incidents-within-sla",
+      "name": "Incidents Within Acceptable SLA",
+      "condition": "actual_uptime >= required_uptime AND monitoring_period_confirmed == true",
+      "confidence": "high",
+      "remedy": "deny_credit",
+      "description": "Recorded incidents occurred but uptime remained within agreed SLA bounds"
+    },
+    {
+      "id": "insufficient-monitoring",
+      "name": "Insufficient Monitoring Data",
+      "condition": "monitoring_period_confirmed == false",
+      "confidence": "low",
+      "remedy": "escalate",
+      "description": "Monitoring data is insufficient to determine if SLA was breached"
+    }
+  ]
+}

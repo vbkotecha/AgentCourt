@@ -306,6 +306,57 @@ def extract_facts(
     else:
         facts["disclosure_compliant"] = metadata.get("disclosure_compliant", True if not non_compliant_evidence else None)
 
+    # ─── SLA MONITORING FACTS ──────────────────────────────────────────────
+    # Extract uptime, latency, and monitoring data from evidence
+    import re as _re3
+    
+    # Required uptime from contract (e.g., "99.9%", "99.95%")
+    sla_str = (contract.get("payment_terms", "") or "") + " " + " ".join(str(o) for o in contract.get("obligations", []))
+    uptime_match = _re3.search(r'(\d+\.?\d*)\s*%\s*(?:uptime|availability|sla)', sla_str, _re3.IGNORECASE)
+    required_uptime = float(uptime_match.group(1)) if uptime_match else metadata.get("required_uptime")
+    facts["required_uptime"] = required_uptime
+    
+    # Actual uptime from evidence
+    actual_uptime = metadata.get("actual_uptime")
+    if actual_uptime is None:
+        for e in scored_evidence:
+            fact = e.get("claimed_fact", "").lower()
+            m = _re3.search(r'(\d+\.?\d*)\s*%\s*(?:uptime|availability)', fact)
+            if not m:
+                m = _re3.search(r'(?:uptime|availability)\s*(?:of\s*)?(\d+\.?\d*)\s*%', fact)
+            if m and ("actual" in fact or "measured" in fact or "achieved" in fact or "recorded" in fact or "observed" in fact or "during" in fact):
+                actual_uptime = float(m.group(1))
+                break
+            elif m and required_uptime and float(m.group(1)) < required_uptime:
+                actual_uptime = float(m.group(1))
+                break
+    facts["actual_uptime"] = actual_uptime
+    
+    # Degraded threshold = 95% (below SLA but not catastrophic)
+    facts["degraded_threshold"] = metadata.get("degraded_threshold", 95.0)
+    
+    # Max latency from contract
+    latency_match = _re3.search(r'(\d+)\s*(?:ms|milliseconds?)\s*(?:max|maximum|latency|response)', sla_str, _re3.IGNORECASE)
+    if not latency_match:
+        latency_match = _re3.search(r'(?:max|maximum|latency|response)\s*(?:time\s*)?(?:of\s*)?(\d+)\s*(?:ms|milliseconds?)', sla_str, _re3.IGNORECASE)
+    max_latency = int(latency_match.group(1)) if latency_match else metadata.get("max_latency")
+    facts["max_latency"] = max_latency
+    
+    # Actual latency from evidence
+    actual_latency = metadata.get("actual_latency")
+    if actual_latency is None:
+        for e in scored_evidence:
+            fact = e.get("claimed_fact", "").lower()
+            m = _re3.search(r'(\d+)\s*(?:ms|milliseconds?)', fact)
+            if m and ("latency" in fact or "response" in fact or "delay" in fact):
+                actual_latency = int(m.group(1))
+                break
+    facts["actual_latency"] = actual_latency
+    
+    # Monitoring period confirmed — if we have uptime or monitoring evidence
+    monitoring_evidence = [e for e in scored_evidence if "monitor" in e.get("claimed_fact", "").lower() or "uptime" in e.get("claimed_fact", "").lower() or "availability" in e.get("claimed_fact", "").lower() or e.get("type") == "log"]
+    facts["monitoring_period_confirmed"] = metadata.get("monitoring_period_confirmed", len(monitoring_evidence) > 0)
+
     # ─── MERGE METADATA FACTS (highest priority) ────────────────────────────
     # Metadata-provided facts override extracted facts — they're explicit declarations
     # from the submitter (e.g., milestone_completed, days_since_completion, payment_terms_days)
