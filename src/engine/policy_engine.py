@@ -287,7 +287,10 @@ def extract_facts(
     # Separate positive reproduction evidence from mentions of non-reproducibility
     positive_repro = [e for e in repro_evidence if not any(kw in e.get("claimed_fact", "").lower() for kw in ["non-reproduc", "cannot reproduce", "not reproduc", "could not reproduce", "not able to reproduce", "failed to reproduce", "unable to reproduce"])]
     
-    if positive_repro and not non_repro_evidence:
+    # Check metadata override first (bug_reproducible or bug_is_reproducible)
+    if "bug_reproducible" in metadata or "bug_is_reproducible" in metadata:
+        facts["bug_is_reproducible"] = metadata.get("bug_reproducible", metadata.get("bug_is_reproducible"))
+    elif positive_repro and not non_repro_evidence:
         facts["bug_is_reproducible"] = True
     elif non_repro_evidence and not positive_repro:
         facts["bug_is_reproducible"] = False
@@ -342,8 +345,10 @@ def extract_facts(
                 independent_severity = "medium"
                 break
     
-    facts["actual_severity"] = metadata.get("actual_severity", independent_severity)
-    facts["severity_meets_threshold"] = metadata.get("severity_meets_threshold", independent_severity in ("critical", "high"))
+    facts["actual_severity"] = metadata.get("actual_severity", metadata.get("bug_severity", independent_severity))
+    facts["severity_meets_threshold"] = metadata.get("severity_meets_threshold",
+        facts["actual_severity"] in ("critical", "high") if facts["actual_severity"] else
+        independent_severity in ("critical", "high"))
     
     # Disclosure compliance from evidence
     disclosure_evidence = [e for e in scored_evidence if any(kw in e.get("claimed_fact", "").lower() for kw in ["disclos", "responsible", "notified vendor", "private report"])]
