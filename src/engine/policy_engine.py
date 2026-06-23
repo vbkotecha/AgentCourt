@@ -361,6 +361,34 @@ def extract_facts(
     else:
         facts["disclosure_compliant"] = metadata.get("disclosure_compliant", True)
 
+    # ─── SCOPE DISPUTE FACTS ───────────────────────────────────────────────
+    # Extract mandate/scope violation data from metadata and evidence
+    mandate_keywords = [e for e in scored_evidence if any(kw in e.get("claimed_fact", "").lower() for kw in ["mandate", "scope", "authorized", "unauthorized", "permission", "exceeded"])]
+    exceeded_keywords = [e for e in scored_evidence if any(kw in e.get("claimed_fact", "").lower() for kw in ["exceeded", "over budget", "beyond scope", "out of scope", "not authorized", "unauthorized"])]
+    within_keywords = [e for e in scored_evidence if any(kw in e.get("claimed_fact", "").lower() for kw in ["within scope", "within mandate", "authorized action", "within parameters", "within budget"])]
+
+    facts["mandate_violated"] = metadata.get("mandate_violated",
+        bool(exceeded_keywords and not within_keywords) if (exceeded_keywords or within_keywords) else None)
+    facts["unauthorized_action"] = metadata.get("unauthorized_action", bool(exceeded_keywords) if exceeded_keywords else None)
+    facts["unauthorized_action_detail"] = metadata.get("unauthorized_action_detail", "")
+    facts["no_prior_consent"] = metadata.get("no_prior_consent",
+        not any("consent" in e.get("claimed_fact", "").lower() or "approved" in e.get("claimed_fact", "").lower() for e in scored_evidence) if exceeded_keywords else None)
+    facts["prior_consent_exists"] = metadata.get("prior_consent_exists",
+        any("consent" in e.get("claimed_fact", "").lower() or "approved" in e.get("claimed_fact", "").lower() for e in scored_evidence) if exceeded_keywords else None)
+    facts["mandate_scope"] = metadata.get("mandate_scope",
+        next((e.get("claimed_fact", "") for e in mandate_keywords if "scope" in e.get("claimed_fact", "").lower() or "mandate" in e.get("claimed_fact", "").lower()), None))
+
+    budget_limit = metadata.get("budget_limit")
+    actual_spend = metadata.get("actual_spend")
+    facts["budget_limit"] = budget_limit
+    facts["actual_spend"] = actual_spend
+    if budget_limit is not None and actual_spend is not None:
+        facts["budget_exceeded"] = actual_spend > budget_limit
+        facts["budget_overage"] = actual_spend - budget_limit
+    else:
+        facts["budget_exceeded"] = metadata.get("budget_exceeded", None)
+        facts["budget_overage"] = metadata.get("budget_overage", 0)
+
     # ─── SLA MONITORING FACTS ──────────────────────────────────────────────
     # Extract uptime, latency, and monitoring data from evidence
     import re as _re3
