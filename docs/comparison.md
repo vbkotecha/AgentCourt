@@ -86,3 +86,24 @@ Arbitova uses a single general-purpose arbitration model.
 
 - AgentCourt: [GitHub](https://github.com/vbkotecha/agentcourt-api) | [API](https://agentcourt-api-production.up.railway.app/docs)
 - Arbitova: [GitHub](https://github.com/jiayuanliang0716-max/Arbitova) | [Website](https://arbitova.com)
+
+
+## AgentCourt vs aubinhaba/dispute-resolution-agent
+
+| Dimension | AgentCourt | dispute-resolution-agent |
+|-----------|-----------|------------------------|
+| Approach | Deterministic rules (no LLM for ruling) | Multi-agent LLM (Spring AI) |
+| Language | Python (FastAPI) | Java (Spring Boot) |
+| Determinism | Guaranteed — same input → same output | Probabilistic — validation layer attempts to enforce consistency |
+| Speed | <500ms | Multiple seconds (LLM inference) |
+| Cost | $0.05/dispute | LLM API cost per dispute |
+| Focus | Agent commerce (x402, API quality, SLA) | Payment chargebacks (traditional finance) |
+| Rules | JSON policy templates, community-contributable | RAG over rule corpus |
+| Audit trail | Matched rule ID + confidence | citedRulePassages + evidenceRefs |
+| MCP | Native MCP server (6 tools) | MCP client for transaction data |
+| API | REST + SDK + Postman | Not exposed as API |
+| License | MIT | Unknown |
+
+**Key insight:** This competitor validates the market need for dispute resolution in automated transactions. Their approach (LLM + validation) is the opposite of ours (deterministic rules). Both agree on the importance of auditability, but we achieve it through simpler means — if the rule is deterministic, the audit is automatic.
+
+**AgentCourt advantage:** No LLM means no hallucination risk in rulings, no per-dispute inference cost, and consistent reproducibility for trust scoring.
