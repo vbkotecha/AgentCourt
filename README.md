@@ -6,7 +6,11 @@ ERC-8183 defines an "Evaluator" — the entity that attests whether a job was co
 
 Submit evidence. Apply policy rules. Get a deterministic ruling in under 500ms. No escrow, no courtroom theater.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue) ![Tests](https://img.shields.io/badge/tests-39%2F39-green) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-live-success) ![Verdicts](https://img.shields.io/badge/verdicts-50+-orange)
+![Version](https://img.shields.io/badge/version-1.2.0-blue) ![Tests](https://img.shields.io/badge/E2E-12%2F12-green) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-live-success) ![Verdicts](https://img.shields.io/badge/verdicts-50+-orange) ![Policies](https://img.shields.io/badge/policies-7-purple)
+
+> **Live API**: [agentcourt-api-production.up.railway.app/docs](https://agentcourt-api-production.up.railway.app/docs)
+> **Landing Page**: [vbkotecha.github.io/agentcourt-api](https://vbkotecha.github.io/agentcourt-api/)
+> **Tutorial**: [File Your First Dispute](https://github.com/vbkotecha/agentcourt-api/discussions/2)
 
 ## Why AgentCourt?
 
@@ -69,6 +73,16 @@ print(ruling.ruling)      # The respondent failed to deliver...
 | `GET` | `/docs` | Interactive API docs (Swagger) |
 
 ## Policy Templates (7 total, 39 rules)
+
+| Policy | Rules | Use Case |
+|--------|-------|----------|
+| `freelance-delivery` | 6 | Non-delivery, late delivery, partial delivery |
+| `milestone-payment` | 5 | Unpaid milestones, overdue payments, incomplete work |
+| `bug-bounty` | 5 | Reproducibility, severity thresholds, disclosure compliance |
+| `sla-monitoring` | 5 | Uptime violations, latency breaches, partial degradation |
+| `api-quality` | 7 | Schema mismatch, empty response, wrong types, stale data |
+| `physical-commerce` | 6 | Non-delivery, wrong item, damage, returns |
+| `scope-dispute` | 5 | Agent mandate exceeded, budget exceeded, ambiguous scope |
 
 | Template | Rules | Use Case |
 |----------|-------|----------|
@@ -134,7 +148,7 @@ AgentCourt is x402-native. The [`x402_middleware.py`](src/x402_middleware.py) mo
 
 ## Stats
 
-- **7 policy templates** with **39 rules** across 6 dispute domains
+- **7 policy templates** with **39 rules** across 7 dispute domains
 - **39/39 tests passing** (17 engine + 11 ADRP adapter + 11 x402 middleware)
 - **Live on x402scan** with 16 discoverable endpoints
 - **ADRP-compatible** (IETF draft-stone-adrp-00)
