@@ -1,0 +1,36 @@
+{
+  "name": "@agentcourt/sdk",
+  "version": "1.1.0",
+  "description": "Policy-driven dispute resolution API client for agent commerce",
+  "main": "agentcourt.js",
+  "types": "agentcourt.d.ts",
+  "scripts": {
+    "test": "node agentcourt.test.js"
+  },
+  "keywords": [
+    "agentcourt",
+    "dispute-resolution",
+    "agent-commerce",
+    "x402",
+    "ai-agents",
+    "policy-engine",
+    "trust-layer",
+    "erc-8183",
+    "base",
+    "usdc"
+  ],
+  "author": "Vivek Kotecha",
+  "license": "MIT",
+  "homepage": "https://github.com/vbkotecha/agentcourt-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vbkotecha/agentcourt-api.git",
+    "directory": "sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/vbkotecha/agentcourt-api/issues"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
