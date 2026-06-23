@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "agentcourt"
+version = "1.0.0"
+description = "Policy-driven dispute resolution SDK for AI agent commerce"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Vivek Kotecha", email = "vbkotecha@gmail.com"}]
+keywords = ["agentcourt", "dispute resolution", "agent commerce", "x402", "base", "usdc", "arbitration", "mcp"]
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP",
+]
+
+[project.urls]
+Homepage = "https://github.com/vbkotecha/agentcourt-api"
+Documentation = "https://agentcourt-api-production.up.railway.app/docs"
