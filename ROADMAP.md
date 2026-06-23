@@ -1,148 +1,99 @@
 # AgentCourt Roadmap
 
-## Vision
+## Current Status: v1.0.0 — Core API Live ✅
 
-Every agent commerce transaction will eventually need dispute resolution. AgentCourt aims to be the default resolution layer — the Stripe Radar of agent commerce. Deterministic, instant, API-first.
-
-## Current State (June 2026)
-
-**Live and working:**
-- ✅ Policy engine with 4 templates, 21 rules, 17/17 tests
-- ✅ REST API (11 endpoints) with Swagger docs
-- ✅ Python SDK (zero-dependency)
-- ✅ JavaScript/TypeScript SDK
-- ✅ MCP server for agent frameworks
-- ✅ ADRP adapter (draft-stone-adrp-00 compatible)
-- ✅ BCP integration example
-- ✅ Interactive demo script (4 scenarios)
+7 policy templates, 39 rules, deterministic <500ms rulings, x402-native.
 
 ---
 
-## Milestones
+## Phase 1: Foundation (COMPLETE ✅)
 
-### M1: Core Engine ✅ Complete
-- Deterministic policy rule evaluation
-- Evidence scoring and fact extraction
-- 4 policy templates (freelance, milestone, bug bounty, SLA)
-- Confidence bands (high/medium/low)
-- Full audit trail in ruling output
+- [x] Core dispute resolution API
+- [x] 7 policy templates (api-quality, freelance-delivery, milestone-payment, bug-bounty, sla-monitoring, scope-dispute, physical-commerce)
+- [x] 39 deterministic rules
+- [x] REST API with OpenAPI spec
+- [x] Python SDK
+- [x] JavaScript SDK
+- [x] MCP Server (6 tools)
+- [x] ElizaOS Plugin
+- [x] x402 payment integration
+- [x] Docker + self-hosting
+- [x] Comprehensive documentation
+- [x] 8 API tests
+- [x] GitHub Pages landing page
+- [x] GitHub Release v1.0.0
 
-### M2: Protocol Compatibility ✅ Complete
-- ADRP RulingBundle adapter (IETF draft-stone-adrp-00)
-- verify_resolution implementation
-- EscrowDirective output for payment rails
-- BCP Protocol integration example
-- 11/11 ADRP adapter tests
+## Phase 2: Trust & Reputation (Q3 2026)
 
-### M3: Developer Experience ← You are here
-**In progress:**
-- [ ] GitHub public repo (code ready, needs push)
-- [ ] npm package (@agentcourt/sdk)
-- [ ] PyPI package (agentcourt)
-- [ ] Hosted API (Railway — needs deploy fix)
-- [ ] Interactive playground (web UI for trying disputes)
+- [ ] Reputation scoring — past rulings create trust scores for agents
+- [ ] Precedent system — similar disputes produce consistent rulings across cases
+- [ ] Case law accumulation — rulings indexed and searchable
+- [ ] Agent identity verification — link disputes to verified agent identities
+- [ ] Appeal system — human fallback for edge cases
 
-**Next:**
-- [ ] TypeScript native SDK (currently JS with .d.ts)
-- [ ] Go SDK
-- [ ] Rust SDK
-- [ ] CLI tool (`agentcourt resolve --policy freelance-delivery --evidence ...`)
+### Reputation Score Design
 
-### M4: Policy Ecosystem
-- [ ] Policy template registry (community-contributed)
-- [ ] Policy validation tool (lint your templates before use)
-- [ ] Custom policy SDK (define rules in Python/YAML)
-- [ ] Policy marketplace (browse and adopt templates)
-- [ ] Policy versioning and migration
+```
+Agent Trust Score = f(
+  total_disputes_filed,
+  disputes_won,
+  disputes_lost,
+  evidence_quality_score,
+  resolution_acceptance_rate,
+  time_since_last_dispute
+)
+```
 
-Templates planned:
-- [ ] NFT marketplace disputes (mint quality, royalty disputes)
-- [ ] DeFi liquidation disputes (oracle manipulation claims)
-- [ ] API access disputes (rate limit, data quality)
-- [ ] Data licensing disputes (usage rights, attribution)
-- [ ] AI model output disputes (hallucination claims, quality)
+Scores update with each ruling. Platforms can query scores to decide whether to transact with an agent.
 
-### M5: Trust & Precedent
-- [ ] Precedent corpus (index rulings by template hash — ADRP Layer 5)
-- [ ] Reputation scores (based on ruling history)
-- [ ] Ed25519 signed rulings with AgentCourt DID
-- [ ] Verifiable Credentials for AgentCourt as arbitrator
-- [ ] IANA "ADRP Trusted Arbitrator Registries" application
-- [ ] Ruling citation system (arbitrators cite or distinguish prior rulings)
+## Phase 3: Marketplace Integration (Q4 2026)
 
-### M6: Scale & Operations
-- [ ] Stateless horizontal scaling (already stateless, needs infra)
-- [ ] Rate limiting and API keys
-- [ ] Usage analytics dashboard
-- [ ] Webhook notifications for ruling completion
-- [ ] Batch dispute submission API
-- [ ] Sub-100ms latency optimization
+- [ ] REST + SDK for marketplace enforcement — platforms can query rulings and enforce them
+- [ ] Webhook notifications — real-time ruling delivery to connected platforms
+- [ ] Bulk dispute API — file multiple disputes in one request
+- [ ] Custom policy builder — visual editor for creating policy templates
+- [ ] Rate limiting + authentication — API keys for production use
 
----
+## Phase 4: Evidence Infrastructure (Q1 2027)
 
-## Integration Partnerships
+- [ ] Content hashing — cryptographic proof of evidence integrity
+- [ ] Provenance tracking — chain of custody for submitted evidence
+- [ ] Tamper detection — verify evidence hasn't been modified
+- [ ] Integration with A2A protocol — automatic evidence collection from agent communication
+- [ ] Integration with x402 — automatic payment proof collection
 
-### Target Platforms (in priority order)
+## Phase 5: Dispute Templates Marketplace (Q2 2027)
 
-| Platform | Why | Status |
-|----------|-----|--------|
-| **BCP Protocol** | Has DISPUTE state but no resolution engine | Integration example built |
-| **x402 (Coinbase)** | Payment protocol, needs dispute layer | Researching |
-| **AP2 (Google)** | Agent Payments Protocol | Researching |
-| **ClawMart** | Agent marketplace | Listed on marketplace |
-| **MoltX** | Agent social network | 16 accounts engaged |
-| **0G / Tribunal** | On-chain court (complementary, not competitive) | Analyzed |
+- [ ] Community-submitted policy templates
+- [ ] Template review and approval process
+- [ ] Template versioning and backwards compatibility
+- [ ] Specialized templates by industry (SaaS, DeFi, physical goods, creator economy)
+- [ ] Template analytics — success rates, accuracy metrics
 
-### ADRP Ecosystem
-AgentCourt is positioned as the first product-level implementation of an ADRP-compatible resolution engine. As the ADRP spec matures through IETF, AgentCourt will:
-1. Track spec updates and maintain compliance
-2. Participate in interop testing
-3. Serve as reference implementation for Semantic-class disputes
-4. Apply for Trusted Arbitrator Registry status
+## Phase 6: Governance (Q3 2027)
+
+- [ ] Decentralized ruling review — community validates edge-case rulings
+- [ ] Policy governance — community proposes and votes on rule changes
+- [ ] Transparency dashboard — all rulings public, searchable, auditable
+- [ ] Optional arbitration layer — human arbitrators for high-value disputes
 
 ---
 
-## Design Partner Program
+## Principles
 
-**Goal:** 5 design partners in Q3 2026
+1. **Deterministic first** — Rules, not LLMs, for the ruling path
+2. **Open source** — MIT licensed, community-driven
+3. **Stateless by default** — No database dependency for core rulings
+4. **Privacy-preserving** — No PII stored, evidence handled by caller
+5. **Platform-agnostic** — Any agent framework, any payment system, any marketplace
 
-**What partners get:**
-- Free API access (up to 100 disputes/day)
-- One custom policy template built for their use case
-- Direct input on roadmap priorities
-- Co-marketing opportunity (case study)
+## How to Contribute
 
-**Target verticals:**
-1. Freelance/gig marketplaces (milestone disputes)
-2. Bug bounty platforms (severity/reproducibility disputes)
-3. SaaS/API providers (SLA disputes)
-4. Agent marketplaces (quality/scope disputes)
-5. DeFi protocols (oracle/liquidation disputes)
+- [Submit a new policy template](CONTRIBUTING_POLICY.md)
+- [Report a bug or request a feature](https://github.com/vbkotecha/agentcourt-api/issues)
+- [Join the discussion](https://github.com/vbkotecha/agentcourt-api/discussions)
+- [Star the repo](https://github.com/vbkotecha/agentcourt-api) ⭐
 
 ---
 
-## Non-Goals (What We Don't Build)
-
-- **Escrow** — AgentCourt never holds funds. Platforms enforce rulings.
-- **Identity** — AgentCourt doesn't verify who you are. Bring your own identity.
-- **LLM-based judgment** — Determinism is a feature. No LLM in the critical path.
-- **Courtroom simulation** — No lawyers, no trials, no multi-agent deliberation.
-- **On-chain enforcement** — AgentCourt produces rulings. Chains enforce them.
-- **Token** — No token, no governance token, no stake-weighted arbitration.
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute.
-
-**Highest-impact contributions right now:**
-1. New policy templates (see M4 planned list)
-2. SDK ports (Go, Rust)
-3. Integration examples (x402, AP2, custom)
-4. Test coverage for edge cases
-5. Documentation translations
-
----
-
-*This roadmap is a living document. Priorities shift based on design partner feedback and market developments. Last updated: June 22, 2026.*
+*This roadmap is a living document. Priorities may shift based on community feedback and market needs.*
