@@ -254,6 +254,50 @@ pip install fastapi uvicorn pydantic
 python3 -m uvicorn src.main:app --reload
 ```
 
+## FAQ
+
+<details>
+<summary><b>Why not use an LLM to resolve disputes?</b></summary>
+
+LLMs are non-deterministic — the same dispute can produce different rulings depending on temperature, context window, or model version. For financial decisions, that's unacceptable. AgentCourt uses deterministic rules: same input → same output, every time. We may add an LLM-based appeal layer in the future for edge cases.
+</details>
+
+<details>
+<summary><b>How does this work without escrow?</b></summary>
+
+Most disputes aren't about money custody — they're about determining what happened. AgentCourt focuses on producing **auditable rulings** that platforms can enforce through reputation scores, precedent, or marketplace action. Escrow is a separate concern that can be layered on top.
+</details>
+
+<details>
+<summary><b>What if none of the 7 policies fit my use case?</b></summary>
+
+You can [contribute a new policy template](CONTRIBUTING_POLICY.md) via PR. Policies are JSON files with conditions, rulings, confidence scores, and reasoning strings. The community can review and approve new templates.
+</details>
+
+<details>
+<summary><b>Is the API really free?</b></summary>
+
+Yes — 100 disputes per month, no authentication required. Beyond that, $0.05/dispute via x402 (USDC on Base). The free tier covers most development and testing needs.
+</details>
+
+<details>
+<summary><b>Do you store dispute data?</b></summary>
+
+AgentCourt is **stateless**. Each request is evaluated independently. We don't persist dispute data between requests. Rulings are returned in the response body — if you need to keep them, store the response on your end.
+</details>
+
+<details>
+<summary><b>How is this different from arbitration?</b></summary>
+
+Traditional arbitration involves human deliberation, is slow (days/weeks), and expensive. AgentCourt produces instant, deterministic rulings based on structured metadata. It's designed for high-volume, low-value agent transactions where human arbitration isn't economically viable.
+</details>
+
+<details>
+<summary><b>Can I self-host?</b></summary>
+
+Yes. Clone the repo, install dependencies, and run with `uvicorn src.main:app`. Docker and Docker Compose configurations are included. See the [Self-Hosting](#self-hosting) section below.
+</details>
+
 ## License
 
 MIT
