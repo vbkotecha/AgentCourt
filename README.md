@@ -6,7 +6,16 @@ ERC-8183 defines an "Evaluator" — the entity that attests whether a job was co
 
 Submit evidence. Apply policy rules. Get a deterministic ruling in under 500ms. No escrow, no courtroom theater.
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue) ![Tests](https://img.shields.io/badge/E2E-12%2F12-green) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-live-success) ![Verdicts](https://img.shields.io/badge/verdicts-50+-orange) ![Policies](https://img.shields.io/badge/policies-7-purple)
+[![GitHub stars](https://img.shields.io/github/stars/vbkotecha/agentcourt-api?style=flat&color=yellow)](https://github.com/vbkotecha/agentcourt-api/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue)](https://github.com/vbkotecha/agentcourt-api/releases)
+[![Policies](https://img.shields.io/badge/policies-7-purple)](https://agentcourt-api-production.up.railway.app/v1/policies)
+[![Rules](https://img.shields.io/badge/rules-39-orange)](https://agentcourt-api-production.up.railway.app/v1/policies)
+[![Latency](https://img.shields.io/badge/latency-<500ms-green)](https://agentcourt-api-production.up.railway.app/docs)
+[![x402](https://img.shields.io/badge/x402-native-blue)](https://github.com/x402-foundation/x402)
+[![MCP](https://img.shields.io/badge/MCP-server-teal)](https://github.com/vbkotecha/agentcourt-api/tree/main/mcp-server)
+[![Tests](https://img.shields.io/badge/tests-8%20passing-brightgreen)](https://github.com/vbkotecha/agentcourt-api/tree/main/tests)
+[![Status](https://img.shields.io/badge/status-live-success)](https://agentcourt-api-production.up.railway.app/health)
 
 > **Live API**: [agentcourt-api-production.up.railway.app/docs](https://agentcourt-api-production.up.railway.app/docs)
 > **Landing Page**: [vbkotecha.github.io/agentcourt-api](https://vbkotecha.github.io/agentcourt-api/)
@@ -17,6 +26,7 @@ Submit evidence. Apply policy rules. Get a deterministic ruling in under 500ms. 
 > **API Examples**: [All 7 Policies](https://github.com/vbkotecha/agentcourt-api/blob/main/docs/API_EXAMPLES.md)
 > **Quick Demo**: `python3 demo.py` (no install required)
 > **ElizaOS Plugin**: `npm install @agentcourt/elizaos-plugin`
+> **Integration Guide**: [All 7 paths with code examples](https://github.com/vbkotecha/agentcourt-api/blob/main/docs/INTEGRATION_GUIDE.md)
 > **Python SDK**: `pip install agentcourt` | **JS SDK**: `npm install @agentcourt/sdk`
 
 ## Why AgentCourt?
