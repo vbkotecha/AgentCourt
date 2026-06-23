@@ -1,98 +1,63 @@
 # Changelog
 
-All notable changes to AgentCourt are documented in this file.
+All notable changes to AgentCourt are documented here.
 
-## [1.0.0] — 2026-06-22
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.1.0] - 2026-06-23
 
 ### Added
-- **4 policy templates** (21 rules total):
-  - `freelance-delivery` (6 rules): non-delivery, late delivery, on-time, partial, disputed acceptance, rejected quality
-  - `milestone-payment` (5 rules): completed-unpaid, completed-paid, incomplete, partially-complete, disputed-completion
-  - `bug-bounty` (5 rules): valid-full-payout, non-reproducible, partial-severity, disclosure-violation, disputed-reproducibility
-  - `sla-monitoring` (5 rules): uptime-violation, latency-breach, partial-degradation, incidents-within-sla, insufficient-monitoring
-- **Policy engine** with evidence scoring, fact extraction, and deterministic rule evaluation
-- **REST API** with 5 endpoints: health, policies, disputes, verdicts, cases
-- **Interactive Swagger UI** at `/swagger`
-- **OpenAPI 3.0.3 spec** at `/openapi.yaml`
-- **API documentation** at `/api-docs`
-- **Interactive demos** at `/demos` for all 4 policy templates
-- **Verdict dashboard** at `/verdicts` with 21 public rulings
-- **Python SDK** (`agentcourt` on PyPI)
-- **JavaScript/TypeScript SDK** (`@agentcourt/sdk` on npm)
-- **MCP server** for Claude/AI agent integration
-- **Postman collection** for one-click API testing
-- **Integration guide** with 3 patterns (marketplace escrow, SLA monitoring, bug bounty)
-- **Comprehensive test suite** — 17/17 tests passing across all policy templates
-- **Landing page** with live ruling engine preview
-
-### Engine Features
-- Evidence scoring with type-based weights (0.0–1.0)
-- Fact extraction from natural language evidence
-- Content hash verification bonus (+0.1 confidence)
-- Recency scoring (30-day window)
-- Reliability multipliers (high/medium/low)
-- Negative phrase detection for delivery, payment, and reproducibility
-- Disputed acceptance handling (null vs true/false)
-- Independent assessment preference for severity scoring
-- SLA latency extraction that skips contract evidence
-- Partial delivery detection with proportional remedies
-
-### Infrastructure
-- Deployed on Railway (auto-deploy from git)
-- CORS enabled for all origins
-- Stateless architecture (no database required for v1)
-- Average ruling time: <500ms
-
-## [1.1.0] — 2026-06-22
-
-### Added — Protocol Compatibility
-- **ADRP adapter** (`src/engine/adrp_adapter.py`) — IETF draft-stone-adrp-00 compatibility
-  - Maps AgentCourt remedies → ADRP verdicts (release/refund/partial)
-  - Maps 21 policy rules → ADRP semantic claim codes
-  - Produces ADRP RulingBundle artifacts from AgentCourt rulings
-  - Implements `verify_ruling_bundle()` per ADRP Section 16.1
-  - Generates `EscrowDirective` for AP2/x402/VCAP payment rails
-  - Canonical JSON (JCS-compatible) for deterministic hashing
-  - Optional Ed25519 signing support
-  - 11/11 adapter tests passing
-- **BCP integration example** (`examples/bcp_integration.py`)
-  - Converts BCP DISPUTE state → AgentCourt dispute
-  - Extracts evidence from BCP session messages
-  - Generates BCP-compatible settlement directive
-  - Demonstrates full chain: BCP → AgentCourt → Settlement → ADRP
-
-### Added — Documentation
-- **ROADMAP.md** — 6 milestones, partnership targets, design partner program, non-goals
-- **FAQ.md** — 15 questions covering general, technical, integration, and security
-- **ADRP_COMPATIBILITY.md** — deep analysis of IETF draft-stone-adrp-00 alignment
-- **DEPLOY_FIX.md** — step-by-step Railway deploy fix guide
-- **STATUS_REPORT_JUN22.md** — overnight session summary for morning review
-
-### Added — Content
-- **8 blog posts/articles** covering market positioning, technical architecture, and ADRP implementation
-- **X/Twitter launch thread** (9 tweets) for @AgentCourtHQ
-- **Interactive demo script** (`scripts/demo.sh`) — 4 real scenarios, colorized output
-- **Investor pitch deck outline** (10 slides, confidential)
-
-### Added — Research
-- Competitive analysis of 4 competitors (Tribunal, BCP Protocol, ADRP, Arbitova)
-- June 2026 agent commerce landscape mapped
-- IETF draft-stone-adrp-00 full spec analyzed
-- Tribunal (kalashshah/tribunal) deep dive — LLM-based judge, 0G Chain, Gensyn AXL
-- BCP Protocol (lucidedev/bcp-protocol) deep dive — DISPUTE state has no resolver
-
-### Added — Community Files
-- **CONTRIBUTING.md** — contribution guide and policy template authoring
-- **CODE_OF_CONDUCT.md** — Contributor Covenant 2.1
-- **Dockerfile** — container build specification
-- **LICENSE** — MIT
+- **scope-dispute policy template** — 5 rules for agent mandate violations
+  - `mandate-exceeded-full-refund`: Unauthorized action, no prior consent
+  - `mandate-exceeded-partial`: Unauthorized but prior consent exists
+  - `budget-exceeded`: Spend over authorized limit with overage calculation
+  - `within-mandate-no-violation`: Action was within scope
+  - `ambiguous-mandate`: Undefined scope → escalate to human review
+- **Dockerfile** for one-command self-hosting (`docker-compose up`)
+- **AGENTS.md** for AI agent discovery and integration
+- **llms.txt** for machine-readable project description
+- **scope_dispute_demo.py** — 3 real-world scenarios using Python SDK
+- **GitHub Discussions** — community entry point with welcome announcement
+- **FUNDING.yml** — GitHub sponsor button
+- **CHANGELOG.md** — this file
+- **Market validation research** — 5 authoritative sources confirming product-market fit
 
 ### Changed
-- Updated README competitive comparison table (4 competitors)
-- Added ADRP positioning note to README
+- Bug-bounty policy: metadata override for `bug_reproducible` / `bug_severity`
+- README updated: 7 policy templates, 39 rules, scope-dispute in policy table
+- GitHub repo: 20 topics for discoverability, homepage set to live API docs
+- Description updated to reflect ERC-8183 alignment
 
-### Infrastructure
-- Total commits: 55
-- Total files: 73
-- Total tests: 28/28 passing (17 engine + 11 ADRP adapter)
-- Dependencies: standard library only (Python SDK + engine)
+### Fixed
+- Bug-bounty template always returning `valid-bug-full-payout` — metadata fields were ignored (#8711fbf)
+
+## [1.0.0] - 2026-06-22
+
+### Added
+- **Core API** — FastAPI with 6 endpoints for dispute submission and verdict retrieval
+- **6 policy templates, 34 rules:**
+  - `freelance-delivery` (5 rules): non-delivery, late delivery, partial delivery
+  - `milestone-payment` (6 rules): unpaid milestones, overdue, partial payments
+  - `bug-bounty` (5 rules): reproducibility, severity, disclosure compliance
+  - `sla-monitoring` (6 rules): uptime, latency, degraded service
+  - `api-quality` (6 rules): schema mismatch, wrong types, stale data, missing fields
+  - `physical-commerce` (6 rules): wrong item, damage, non-delivery, returns
+- **Policy Engine** — deterministic rule matching with evidence scoring and fact extraction
+- **3 SDKs** (all zero-dependency):
+  - Python: `agentcourt_python_sdk.py`
+  - JavaScript: `agentcourt.js`
+  - TypeScript: `agentcourt.d.ts`
+- **x402 middleware** — $0.05/dispute pricing, OpenAPI payment annotations, `.well-known/x402` manifest
+- **ADRP adapter** — Implements Layers 1-3 of IETF draft-stone-adrp-00
+- **Postman collection** for API testing
+- **MCP server config** for Claude Desktop, Cursor, Claude Code
+- **docker-compose.yml** with healthcheck
+- **GitHub community files:** CONTRIBUTING.md, issue templates (bug report, feature request, policy template), PR template
+- **Test suite** — 39 tests covering policy engine, ADRP adapter, x402 middleware
+- **Production deployment** on Railway with 50+ verdicts resolved
+
+### Standards
+- ERC-8183: AgentCourt fulfills the "Evaluator" role
+- ADRP: Layers 1-3 of IETF draft-stone-adrp-00
+- x402: USDC on Base, x402scan indexed (16 endpoints)
