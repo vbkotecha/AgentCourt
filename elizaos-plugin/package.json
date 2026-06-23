@@ -1,0 +1,37 @@
+{
+  "name": "@agentcourt/elizaos-plugin",
+  "description": "AgentCourt dispute resolution plugin for ElizaOS agents",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [
+    "elizaos",
+    "eliza",
+    "agentcourt",
+    "dispute-resolution",
+    "agent-commerce",
+    "x402",
+    "base",
+    "usdc"
+  ],
+  "author": "Vivek Kotecha <vbkotecha@gmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
