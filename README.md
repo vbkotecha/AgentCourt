@@ -68,7 +68,7 @@ print(ruling.ruling)      # The respondent failed to deliver...
 | `GET` | `/health` | API health check |
 | `GET` | `/docs` | Interactive API docs (Swagger) |
 
-## Policy Templates (6 total, 34 rules)
+## Policy Templates (7 total, 39 rules)
 
 | Template | Rules | Use Case |
 |----------|-------|----------|
@@ -78,6 +78,7 @@ print(ruling.ruling)      # The respondent failed to deliver...
 | `sla-monitoring` | 5 | Service violations: uptime, latency, degraded service |
 | `api-quality` | 7 | Paid API disputes: schema mismatch, wrong types, stale data |
 | `physical-commerce` | 6 | Product purchases: wrong item, damage, non-delivery, returns |
+| `scope-dispute` | 5 | Agent mandate violations: unauthorized actions, budget exceeded, ambiguous scope |
 
 ## How It Works
 
@@ -133,7 +134,7 @@ AgentCourt is x402-native. The [`x402_middleware.py`](src/x402_middleware.py) mo
 
 ## Stats
 
-- **6 policy templates** with **34 rules** across 5 dispute domains
+- **7 policy templates** with **39 rules** across 6 dispute domains
 - **39/39 tests passing** (17 engine + 11 ADRP adapter + 11 x402 middleware)
 - **Live on x402scan** with 16 discoverable endpoints
 - **ADRP-compatible** (IETF draft-stone-adrp-00)
@@ -153,7 +154,8 @@ AgentCourt is x402-native. The [`x402_middleware.py`](src/x402_middleware.py) mo
 │       ├── bug-bounty.json
 │       ├── sla-monitoring.json
 │       ├── api-quality.json
-│       └── physical-commerce.json
+│       ├── physical-commerce.json
+│       └── scope-dispute.json
 ├── sdk/
 │   ├── agentcourt_python_sdk.py # Python SDK (zero-dependency, dataclasses)
 │   ├── agentcourt.js            # JavaScript SDK (ESM + CommonJS)
