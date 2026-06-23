@@ -5,7 +5,7 @@ Thank you for your interest in contributing to AgentCourt! This document outline
 ## Getting Started
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/agentcourt/agentcourt.git`
+2. Clone your fork: `git clone https://github.com/vbkotecha/agentcourt-api.git`
 3. Install dependencies: `pip install -r requirements.txt`
 4. Run the test suite: `python -m pytest tests/`
 

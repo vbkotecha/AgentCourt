@@ -5,6 +5,47 @@ All notable changes to AgentCourt are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-06-23
+
+### Added
+- **Python SDK** (`pip install agentcourt`) — zero dependencies, stdlib only
+  - `AgentCourt` client with `file_dispute()`, `list_policies()`, `get_policy()`, `get_case()`, `list_cases()`, `health()`
+  - `PaymentRequiredError` with x402 challenge details
+  - `Dispute`, `Ruling`, `Policy`, `Evidence` dataclasses
+- **JavaScript/TypeScript SDK** (`npm install @agentcourt/sdk`)
+  - Full TypeScript definitions
+  - Zero dependencies (native fetch, Node 18+)
+- **MCP Server** (`@agentcourt/mcp-server`) — 6 tools for Claude/Cursor
+  - `file_dispute`, `list_policies`, `get_policy_details`, `get_case`, `list_verdicts`, `health_check`
+  - `server.json` manifest for MCP Registry submission
+- **ElizaOS Plugin** (`@agentcourt/elizaos-plugin`)
+  - `FILE_DISPUTE` and `CHECK_POLICIES` actions for ElizaOS agents
+- **Integration Examples** — LangChain, CrewAI, Node.js drop-in tools
+- **Architecture Document** — design philosophy, policy engine internals, determinism guarantee
+- **Comparison Guide** — AgentCourt vs Arbitova (positioned as complementary)
+- **API Examples** — complete request/response for all 7 policy templates
+- **Policy Contribution Guide** — community-driven policy template creation
+- **Demo Script** — zero-install interactive demo (`python3 demo.py`)
+- **GitHub Codespaces** — one-click dev environment
+- **8 API Tests** — health, policies, dispute filing, OpenAPI spec (all passing)
+- **3 Blog Posts** — missing layer, dev.to tutorial, deterministic dispute resolution
+- **4 GitHub Discussions** — welcome, integration guide, API examples, use cases
+- **Issue Templates** — bug report, policy request, feature request
+
+### Distribution
+- awesome-molt-ecosystem: **MERGED** (x402 Economy section)
+- public-apis: PR open (443K stars, Blockchain section)
+- awesome-mcp-servers: PR open (89K stars, Legal section)
+- awesome-x402: PR open (241 stars)
+- awesome-agentic-commerce: PR open (133 stars)
+- W3C Workshop: Expression of Interest submitted
+- 12+ targeted GitHub comments across Coinbase, x402, LlamaIndex, cognitia.cloud
+
+### Changed
+- GitHub topics expanded to 20 (added: mcp-server, mcp, agentic-commerce, erc-8183, ai-payments)
+- README updated with SDK install commands, demo, ElizaOS plugin, architecture docs
+- CONTRIBUTING.md clone URL fixed
+
 ## [1.1.0] - 2026-06-23
 
 ### Added
