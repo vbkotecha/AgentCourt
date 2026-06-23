@@ -354,6 +354,7 @@ async def x402_manifest():
             "description": "100 free disputes per month, then $0.05/dispute via x402",
         },
         "categories": ["Infrastructure & Tooling", "Dispute Resolution"],
+        "payTo": "0x9863aB6242663FCc84c33632741711dB78f8Fd15",
         "contact": "https://github.com/vbkotecha/agentcourt-api",
         "website": "https://vbkotecha.github.io/agentcourt-api/",
         "license": "MIT",
