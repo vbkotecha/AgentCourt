@@ -6,3 +6,34 @@ venv/
 data/
 Dockerfile.bak
 *.bak
+
+# Node
+node_modules/
+dist/
+*.tgz
+.npmrc
+
+# Python build artifacts
+build/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Railway
+railway.json
+railway.toml
