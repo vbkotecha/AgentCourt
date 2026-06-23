@@ -1,35 +1,36 @@
 ---
-name: Policy Template Request
+name: Policy Request
 about: Request a new dispute resolution policy template
 title: "[Policy] "
-labels: enhancement, policy-request
+labels: policy-request
+assignees: ''
 ---
 
 ## Policy Name
-<!-- e.g., "data-licensing", "nft-authenticity" -->
+<!-- e.g., "data-privacy-breach", "nft-authenticity", "subscription-cancellation" -->
 
 ## Use Case
-<!-- What type of agent commerce dispute does this policy resolve? -->
+<!-- Describe the scenario this policy would cover -->
 
-## Key Facts (Metadata)
-<!-- What structured facts should the policy engine evaluate? -->
-- `fact_name` (type): description
-- `fact_name` (type): description
-
-## Expected Rulings
-<!-- What outcomes should the policy produce? -->
-- [ ] full_refund
-- [ ] partial_refund
-- [ ] no_payout
-- [ ] other: 
-
-## Example Dispute
-<!-- Describe a real scenario where this policy would be used -->
+## Evidence Structure
+<!-- What metadata fields would the policy evaluate? -->
 
 ```json
 {
-  "policy": "your-policy-name",
-  "metadata": {},
-  "evidence": []
+  "metadata": {
+    "field1": "",
+    "field2": false
+  }
 }
 ```
+
+## Expected Rules
+<!-- List the conditions and rulings -->
+
+| Condition | Ruling | Confidence | Reasoning |
+|-----------|--------|------------|-----------|
+| metadata.field == false | full_refund | 0.95 | Description |
+| metadata.field == true | claim_denied | 0.90 | Description |
+
+## Real-World Example
+<!-- Describe a real dispute this policy would resolve -->
