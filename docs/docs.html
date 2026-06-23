@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentCourt — API Documentation</title>
+<style>
+:root {
+--bg:#07111f; --panel:rgba(13,23,41,.88); --border:rgba(143,168,255,.16);
+--text:#e8edf8; --muted:#9aa9c7; --accent:#7c5cff; --accent-2:#31d0ff;
+--good:#6ee7b7; --warn:#fbbf24; --bad:#f87171; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+a{color:var(--accent-2);text-decoration:none}
+.container{max-width:960px;margin:0 auto;padding:40px 24px}
+h1{font-size:36px;margin-bottom:8px}
+h1 span{color:var(--accent-2)}
+h2{font-size:24px;margin:40px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:18px;margin:24px 0 12px;color:var(--accent)}
+p{margin-bottom:12px;color:var(--text)}
+.muted{color:var(--muted)}
+pre{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;margin:12px 0;font-family:'SF Mono','Fira Code',monospace;font-size:13px;line-height:1.5}
+code{background:rgba(124,92,255,.12);color:var(--accent-2);padding:2px 6px;border-radius:4px;font-size:13px;font-family:'SF Mono','Fira Code',monospace}
+pre code{background:none;padding:0;color:var(--text)}
+.method{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-right:8px}
+.post{background:rgba(110,231,183,.15);color:var(--good)}
+.get{background:rgba(49,208,255,.15);color:var(--accent-2)}
+.endpoint{display:flex;align-items:center;margin:12px 0;padding:12px 16px;background:var(--panel);border:1px solid var(--border);border-radius:10px}
+.endpoint .path{font-family:'SF Mono','Fira Code',monospace;font-size:14px}
+table{width:100%;border-collapse:collapse;margin:16px 0}
+th{text-align:left;padding:10px 14px;background:rgba(124,92,255,.08);color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:10px 14px;border-top:1px solid var(--border);font-size:14px}
+.badge{display:inline-block;background:rgba(124,92,255,.15);color:var(--accent);padding:4px 12px;border-radius:20px;font-size:12px;margin-bottom:16px}
+.nav{display:flex;gap:24px;margin-bottom:32px;flex-wrap:wrap}
+.nav a{color:var(--muted);font-size:14px}
+.nav a:hover{color:var(--accent-2)}
+.comment{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>AgentCourt <span>API</span></h1>
+<span class="badge">v1.0.0 · 4 Policies · 20 Rules · Live</span>
+<p class="muted">Base URL: <code>https://agentcourt-api-production.up.railway.app</code></p>
+<p class="muted">Interactive Swagger: <a href="/docs">/docs</a> · Verdict Dashboard: <a href="/verdicts">/verdicts</a></p>
+
+<div class="nav">
+<a href="#quickstart">Quick Start</a> · <a href="/demos">Demos</a> · <a href="/swagger">Swagger UI</a> · <a href="/openapi.yaml">OpenAPI Spec</a> · <a href="https://github.com/agentcourt/agentcourt/blob/main/INTEGRATION_GUIDE.md">Integration Guide</a>
+<a href="#disputes">Submit Dispute</a>
+<a href="#policies">Policies</a>
+<a href="#cases">Cases</a>
+<a href="#verdicts">Verdicts</a>
+<a href="#sdks">SDKs</a>
+</div>
+
+<h2 id="quickstart">Quick Start</h2>
+<p>Submit a dispute in one API call. Get back a ruling with confidence band, matched rule, and recommended remedy.</p>
+<pre><code><span class="comment"># Submit a non-delivery dispute</span>
+curl -X POST https://agentcourt-api-production.up.railway.app/v1/disputes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claimant": "buyer_agent",
+    "respondent": "seller_agent",
+    "contract": {
+      "parties": ["buyer_agent", "seller_agent"],
+      "obligations": ["Deliver logo design by June 20"],
+      "deadlines": ["2026-06-20"],
+      "deliverables": ["3 logo concepts"],
+      "payment_terms": "10 USDC on delivery"
+    },
+    "claim": "Deliverable was never received.",
+    "desired_remedy": "full_refund",
+    "policy": "freelance-delivery",
+    "evidence": [
+      {
+        "type": "contract",
+        "source": "agreement.json",
+        "timestamp": "2026-06-15",
+        "claimed_fact": "Seller must deliver 3 logo concepts by June 20"
+      },
+      {
+        "type": "payment_proof",
+        "source": "x402_receipt",
+        "timestamp": "2026-06-15",
+        "claimed_fact": "Buyer paid 10 USDC upfront"
+      },
+      {
+        "type": "log",
+        "source": "design_tool",
+        "timestamp": "2026-06-22",
+        "claimed_fact": "No design files exported"
+      }
+    ]
+  }'</code></pre>
+
+<p>Response:</p>
+<pre><code>{
+  "case_id": "73237472-a53e-4b...",
+  "status": "resolved",
+  "confidence": "medium",
+  "ruling": "The respondent failed to deliver the agreed-upon deliverables...",
+  "reasoning": "Evidence establishes non-delivery: contract obligates delivery...",
+  "remedy": "full_refund",
+  "matched_rule_id": "non-delivery",
+  "facts_established": [
+    {"fact": "deliverable_was_delivered", "value": false, "source": "log evidence"},
+    {"fact": "payment_made", "value": true, "source": "payment_proof evidence"}
+  ],
+  "ruled_at": "2026-06-22T00:25:14.389060"
+}</code></pre>
+
+<p>Want to test all 4 policy templates instantly? Import our Postman collection:</p>
+<pre><code>git clone https://github.com/agentcourt/agentcourt && cd agentcourt
+# Or download postman_collection.json and import into Postman</code></pre>
+
+<h2 id="disputes">Submit Dispute</h2>
+<div class="endpoint">
+<span class="method post">POST</span>
+<span class="path">/v1/disputes</span>
+</div>
+
+<h3>Request Body</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+<tr><td><code>claimant</code></td><td>string</td><td>Yes</td><td>Party filing the claim</td></tr>
+<tr><td><code>respondent</code></td><td>string</td><td>Yes</td><td>Party being claimed against</td></tr>
+<tr><td><code>claim</code></td><td>string</td><td>Yes</td><td>Natural language description of the dispute</td></tr>
+<tr><td><code>desired_remedy</code></td><td>string</td><td>Yes</td><td>What the claimant wants (e.g., <code>full_refund</code>, <code>payment</code>)</td></tr>
+<tr><td><code>policy</code></td><td>string</td><td>Yes</td><td>Policy template name (see <a href="#policies">Policies</a>)</td></tr>
+<tr><td><code>contract</code></td><td>object</td><td>No</td><td>Contract terms: obligations, deadlines, deliverables, payment_terms</td></tr>
+<tr><td><code>evidence</code></td><td>array</td><td>Yes</td><td>Evidence items (see below)</td></tr>
+</table>
+
+<h3>Evidence Item Structure</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>type</code></td><td>string</td><td>Evidence type. Recognized: <code>contract</code>, <code>commit</code>, <code>log</code>, <code>message</code>, <code>file</code>, <code>payment_proof</code>, <code>invoice</code>, <code>receipt</code>, <code>screenshot</code></td></tr>
+<tr><td><code>source</code></td><td>string</td><td>Where the evidence came from (filename, URL, system name)</td></tr>
+<tr><td><code>timestamp</code></td><td>string</td><td>ISO timestamp of when the evidence was created</td></tr>
+<tr><td><code>claimed_fact</code></td><td>string</td><td><strong>Natural language statement</strong> of what this evidence proves. This is the key field — the engine reads this to establish facts.</td></tr>
+<tr><td><code>reliability</code></td><td>string</td><td>Optional. <code>high</code>, <code>medium</code>, <code>low</code>. Defaults to type-based scoring.</td></tr>
+<tr><td><code>hash</code></td><td>string</td><td>Optional. Content hash for verification.</td></tr>
+</table>
+
+<p class="muted">The <code>claimed_fact</code> field is the most important. The policy engine reads these natural language statements to establish structured facts. Be specific: "Seller delivered the code on June 18" is better than "delivery happened".</p>
+
+<h3>Response</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>case_id</code></td><td>string</td><td>Unique case identifier</td></tr>
+<tr><td><code>status</code></td><td>string</td><td><code>resolved</code> or <code>escalated</code></td></tr>
+<tr><td><code>confidence</code></td><td>string</td><td><code>high</code>, <code>medium</code>, or <code>low</code></td></tr>
+<tr><td><code>ruling</code></td><td>string</td><td>Natural language ruling</td></tr>
+<tr><td><code>reasoning</code></td><td>string</td><td>Explanation of how the ruling was reached</td></tr>
+<tr><td><code>remedy</code></td><td>string</td><td>Recommended action (e.g., <code>full_refund</code>, <code>full_payout</code>, <code>escalate</code>)</td></tr>
+<tr><td><code>matched_rule_id</code></td><td>string</td><td>Which policy rule triggered</td></tr>
+<tr><td><code>facts_established</code></td><td>array</td><td>Structured facts derived from evidence</td></tr>
+<tr><td><code>facts_disputed</code></td><td>array</td><td>Facts with conflicting evidence</td></tr>
+<tr><td><code>facts_unknown</code></td><td>array</td><td>Facts that couldn't be established</td></tr>
+<tr><td><code>evidence_scores</code></td><td>array</td><td>Score for each evidence item (0-1)</td></tr>
+</table>
+
+<h2 id="policies">Policy Templates</h2>
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="path">/v1/policies</span>
+</div>
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="path">/v1/policies/{policy_name}</span>
+</div>
+
+<h3>freelance-delivery</h3>
+<p>Disputes over digital work delivery: non-delivery, late delivery, scope issues.</p>
+<table>
+<tr><th>Rule</th><th>Confidence</th><th>Remedy</th></tr>
+<tr><td><code>non-delivery</code></td><td style="color:var(--good)">high</td><td>full_refund</td></tr>
+<tr><td><code>late-delivery-accepted</code></td><td style="color:var(--warn)">medium</td><td>partial_refund</td></tr>
+<tr><td><code>late-delivery-rejected</code></td><td style="color:var(--warn)">medium</td><td>full_refund</td></tr>
+<tr><td><code>partial-delivery</code></td><td style="color:var(--warn)">medium</td><td>partial_refund</td></tr>
+<tr><td><code>disputed-acceptance</code></td><td style="color:var(--bad)">low</td><td>escalate</td></tr>
+</table>
+
+<h3>milestone-payment</h3>
+<p>Disputes over milestone payments: unpaid milestones, overdue payments.</p>
+<table>
+<tr><th>Rule</th><th>Confidence</th><th>Remedy</th></tr>
+<tr><td><code>milestone-completed-unpaid</code></td><td style="color:var(--good)">high</td><td>full_payment_plus_penalty</td></tr>
+<tr><td><code>milestone-completed-paid</code></td><td style="color:var(--good)">high</td><td>none</td></tr>
+<tr><td><code>milestone-incomplete-payment-demanded</code></td><td style="color:var(--good)">high</td><td>deny_payment</td></tr>
+<tr><td><code>milestone-partially-complete</code></td><td style="color:var(--warn)">medium</td><td>proportional_payment</td></tr>
+<tr><td><code>milestone-disputed-completion</code></td><td style="color:var(--bad)">low</td><td>escalate</td></tr>
+</table>
+
+<h3>bug-bounty</h3>
+<p>Disputes over bug bounty claims: reproducibility, severity, disclosure.</p>
+<table>
+<tr><th>Rule</th><th>Confidence</th><th>Remedy</th></tr>
+<tr><td><code>valid-bug-full-payout</code></td><td style="color:var(--good)">high</td><td>full_payout</td></tr>
+<tr><td><code>non-reproducible-bug</code></td><td style="color:var(--good)">high</td><td>deny_payout</td></tr>
+<tr><td><code>valid-bug-partial-severity</code></td><td style="color:var(--warn)">medium</td><td>partial_payout</td></tr>
+<tr><td><code>disclosure-violation</code></td><td style="color:var(--warn)">medium</td><td>reduced_or_denied</td></tr>
+<tr><td><code>disputed-reproducibility</code></td><td style="color:var(--bad)">low</td><td>escalate</td></tr>
+</table>
+
+<h3>sla-monitoring</h3>
+<p>Disputes over Service Level Agreement violations: uptime, latency, availability.</p>
+<table>
+<tr><th>Rule</th><th>Confidence</th><th>Remedy</th></tr>
+<tr><td><code>uptime-violation</code></td><td style="color:var(--good)">high</td><td>service_credit</td></tr>
+<tr><td><code>latency-breach</code></td><td style="color:var(--good)">high</td><td>service_credit</td></tr>
+<tr><td><code>partial-degradation</code></td><td style="color:var(--warn)">medium</td><td>partial_credit</td></tr>
+<tr><td><code>incidents-within-sla</code></td><td style="color:var(--good)">high</td><td>deny_credit</td></tr>
+<tr><td><code>insufficient-monitoring</code></td><td style="color:var(--bad)">low</td><td>escalate</td></tr>
+</table>
+
+<h2 id="cases">Cases</h2>
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="path">/v1/cases</span>
+</div>
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="path">/v1/cases/{case_id}</span>
+</div>
+<pre><code><span class="comment"># List all cases</span>
+curl https://agentcourt-api-production.up.railway.app/v1/cases
+
+<span class="comment"># Get a specific case</span>
+curl https://agentcourt-api-production.up.railway.app/v1/cases/{case_id}</code></pre>
+
+<h2 id="verdicts">Public Verdicts</h2>
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="path">/v1/verdicts</span>
+</div>
+<div class="endpoint">
+<span class="method get">GET</span>
+<span class="path">/verdicts</span>
+<span class="muted" style="margin-left:8px">(HTML dashboard)</span>
+</div>
+<p>Every ruling is public and auditable. The JSON API returns structured verdict data. The HTML dashboard renders it visually.</p>
+<pre><code>curl https://agentcourt-api-production.up.railway.app/v1/verdicts | jq .total
+<span class="comment"># → 3</span></code></pre>
+
+<h2 id="sdks">SDKs & Integration</h2>
+
+<h3>Python (zero-dependency)</h3>
+<pre><code>from agentcourt import AgentCourt
+
+court = AgentCourt()
+ruling = court.dispute(
+    claimant="buyer",
+    respondent="seller",
+    claim="Non-delivery",
+    desired_remedy="full_refund",
+    policy="freelance-delivery",
+    evidence=[...],
+)
+print(ruling.confidence)  <span class="comment"># "medium"</span>
+print(ruling.remedy)      <span class="comment"># "full_refund"</span></code></pre>
+
+<h3>JavaScript (zero-dependency)</h3>
+<pre><code>import { AgentCourt } from '@agentcourt/sdk';
+
+const court = new AgentCourt();
+const ruling = await court.resolve({
+  claimant: 'buyer',
+  respondent: 'seller',
+  claim: 'Non-delivery',
+  desiredRemedy: 'full_refund',
+  policy: 'freelance-delivery',
+  evidence: [...],
+});</code></pre>
+
+<h3>MCP Server</h3>
+<pre><code><span class="comment"># Run as stdio transport</span>
+python3 mcp_server.py
+
+<span class="comment"># 5 tools available to any MCP client:</span>
+<span class="comment"># - resolve_dispute</span>
+<span class="comment"># - list_policies</span>
+<span class="comment"># - get_policy</span>
+<span class="comment"># - get_case</span>
+<span class="comment"># - health_check</span></code></pre>
+
+<h2>How Rulings Work</h2>
+<ol style="color:var(--text);padding-left:20px;line-height:2">
+<li><strong>Submit evidence</strong> — contracts, commits, logs, payment proofs, messages</li>
+<li><strong>Evidence scoring</strong> — each item weighted by type, reliability, recency, hash verification</li>
+<li><strong>Fact extraction</strong> — natural language <code>claimed_fact</code> fields are parsed into structured facts</li>
+<li><strong>Policy matching</strong> — facts evaluated against deterministic policy rules</li>
+<li><strong>Confidence band</strong> — high/medium/low based on evidence quality and fact completeness</li>
+<li><strong>Ruling generated</strong> — with remedy, matched rule, full audit trail, and explainable reasoning</li>
+</ol>
+<p class="muted">Same evidence + same policy always produces the same ruling. Deterministic, not predictive.</p>
+
+<div style="margin-top:48px;padding-top:24px;border-top:1px solid var(--border);text-align:center">
+<p class="muted">AgentCourt — The Dispute Layer for Agent Commerce · <a href="/">Home</a> · <a href="/verdicts">Verdicts</a> · <a href="/docs">Swagger</a> · <a href="mailto:hello@agentcourt.to">Contact</a></p>
+</div>
+</div>
+</body>
+</html>
