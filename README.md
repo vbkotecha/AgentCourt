@@ -8,7 +8,7 @@ Submit evidence. Apply policy rules. Get a deterministic ruling in under 500ms. 
 
 [![GitHub stars](https://img.shields.io/github/stars/vbkotecha/agentcourt-api?style=flat&color=yellow)](https://github.com/vbkotecha/agentcourt-api/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.2.0-blue)](https://github.com/vbkotecha/agentcourt-api/releases)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue)](https://github.com/vbkotecha/agentcourt-api/releases)
 [![Policies](https://img.shields.io/badge/policies-7-purple)](https://agentcourt-api-production.up.railway.app/v1/policies)
 [![Rules](https://img.shields.io/badge/rules-39-orange)](https://agentcourt-api-production.up.railway.app/v1/policies)
 [![Latency](https://img.shields.io/badge/latency-<500ms-green)](https://agentcourt-api-production.up.railway.app/docs)
@@ -16,6 +16,10 @@ Submit evidence. Apply policy rules. Get a deterministic ruling in under 500ms. 
 [![MCP](https://img.shields.io/badge/MCP-server-teal)](https://github.com/vbkotecha/agentcourt-api/tree/main/mcp-server)
 [![Tests](https://img.shields.io/badge/tests-8%20passing-brightgreen)](https://github.com/vbkotecha/agentcourt-api/tree/main/tests)
 [![Status](https://img.shields.io/badge/status-live-success)](https://agentcourt-api-production.up.railway.app/health)
+[![Last Commit](https://img.shields.io/github/last-commit/vbkotecha/agentcourt-api?style=flat&color=blue)](https://github.com/vbkotecha/agentcourt-api/commits)
+[![Commits](https://img.shields.io/github/commit-activity/m/vbkotecha/agentcourt-api?style=flat&color=green)](https://github.com/vbkotecha/agentcourt-api/commits)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/vbkotecha/agentcourt-api/blob/main/CONTRIBUTING.md)
+[![Discussions](https://img.shields.io/badge/discussions-active-blue)](https://github.com/vbkotecha/agentcourt-api/discussions)
 
 > **Live API**: [agentcourt-api-production.up.railway.app/docs](https://agentcourt-api-production.up.railway.app/docs)
 > **Landing Page**: [vbkotecha.github.io/agentcourt-api](https://vbkotecha.github.io/agentcourt-api/)
