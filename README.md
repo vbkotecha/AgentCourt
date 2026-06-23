@@ -84,10 +84,14 @@ print(ruling.ruling)      # The respondent failed to deliver...
 | `POST` | `/v1/disputes` | Submit a dispute, get a ruling |
 | `GET` | `/v1/cases` | List all cases |
 | `GET` | `/v1/cases/{id}` | Get a specific case |
-| `GET` | `/v1/policies` | List policy templates |
-| `GET` | `/v1/policies/{name}` | Get policy details |
-| `GET` | `/health` | API health check |
-| `GET` | `/docs` | Interactive API docs (Swagger) |
+| `GET` | `/v1/policies` | List all policy templates |
+| `GET` | `/v1/policies/{name}` | Get policy details (rules, thresholds) |
+| `POST` | `/v1/policies/{name}/preview` | Preview how a policy would rule |
+| `GET` | `/v1/verdicts` | List recent verdicts |
+| `GET` | `/.well-known/agent.json` | Agent card (A2A protocol) |
+| `GET` | `/schema.json` | JSON schema for dispute validation |
+| `GET` | `/health` | Health check (version, policies, status) |
+| `GET` | `/docs` | Interactive API docs (Swagger UI) |
 
 ## Policy Templates (7 total, 39 rules)
 
