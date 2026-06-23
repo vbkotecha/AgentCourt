@@ -107,3 +107,36 @@ Arbitova uses a single general-purpose arbitration model.
 **Key insight:** This competitor validates the market need for dispute resolution in automated transactions. Their approach (LLM + validation) is the opposite of ours (deterministic rules). Both agree on the importance of auditability, but we achieve it through simpler means — if the rule is deterministic, the audit is automatic.
 
 **AgentCourt advantage:** No LLM means no hallucination risk in rulings, no per-dispute inference cost, and consistent reproducibility for trust scoring.
+
+
+## Market Ecosystem (June 2026)
+
+AgentCourt doesn't exist in isolation. Here's how we fit into the emerging agent commerce stack:
+
+| Layer | Project | What They Do | Relationship |
+|-------|---------|--------------|--------------|
+| **Identity** | [Open Agent Trust Registry](https://github.com/FransDevelopment/open-agent-trust-registry) | Root-of-trust for agent identity (Ed25519 attestations) | **Complementary** — Their identity + our disputes = complete trust |
+| **Governance** | [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit) | Policy enforcement, zero-trust for AI agents (4.4K★) | **Adjacent** — Governance before transaction, disputes after |
+| **Payments** | x402 Protocol | HTTP 402 → USDC micropayments | **Integration** — We use x402 for per-dispute pricing |
+| **Audio Licensing** | [Resonate](https://github.com/akoita/resonate) | Machine-first audio licensing for agentic commerce | **Potential customer** — License disputes could use our API |
+| **LLM Disputes** | [AI Dispute Resolution](https://github.com/Hardikdhawan2904/ai-dispute-resolution-system) | Enterprise dispute resolution with AI | **Differentiator** — LLM-based vs our deterministic approach |
+
+### The Trust Stack
+
+```
+┌─────────────────────────────────────────┐
+│  Governance (MS Toolkit, etc.)          │ ← Pre-transaction rules
+├─────────────────────────────────────────┤
+│  Identity (Trust Registry, A2A)         │ ← Who are you?
+├─────────────────────────────────────────┤
+│  Discovery (Directories, Marketplaces)  │ ← How do I find you?
+├─────────────────────────────────────────┤
+│  Payment (x402, USDC)                   │ ← How do I pay you?
+├─────────────────────────────────────────┤
+│  ★ DISPUTE (AgentCourt) ★              │ ← What happens when it goes wrong?
+├─────────────────────────────────────────┤
+│  Reputation (Phase 2)                   │ ← What's your track record?
+└─────────────────────────────────────────┘
+```
+
+We're the layer nobody else is building — and the one the stack needs most.
