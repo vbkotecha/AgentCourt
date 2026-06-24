@@ -8,8 +8,9 @@ LABEL org.opencontainers.image.title="AgentCourt" \
 
 WORKDIR /app
 
-# Install only what we need
-RUN pip install --no-cache-dir fastapi uvicorn[standard] pydantic
+# Install all dependencies from requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source
 COPY src/ ./src/

@@ -2,4 +2,5 @@ fastapi
 uvicorn[standard]
 pydantic
 pyyaml
-x402[fastapi,evm]
+x402[fastapi,httpx,evm]
+cryptography
