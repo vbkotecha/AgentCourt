@@ -308,14 +308,15 @@ submit("insufficient-monitoring", {
 # RESULTS
 # ═══════════════════════════════════════════════════════════════
 print(f"\n{'='*50}")
-print(f"RESULTS: {passed} passed, {failed} failed, {passed+failed} total")
-print(f"{'='*50}")
+if __name__ == "__main__":
+    print(f"RESULTS: {passed} passed, {failed} failed, {passed+failed} total")
+    print(f"{'='*50}")
 
-if errors:
-    print("\nFailures:")
-    for e in errors:
-        print(f"  {e}")
-    sys.exit(1)
-else:
-    print("\nAll tests passed! ✅")
-    sys.exit(0)
+    if errors:
+        print("\nFailures:")
+        for e in errors:
+            print(f"  {e}")
+        sys.exit(1)
+    else:
+        print("\nAll tests passed! ✅")
+        sys.exit(0)
