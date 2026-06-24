@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 pydantic
 pyyaml
+x402[fastapi,evm]
